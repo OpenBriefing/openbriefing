@@ -1,7 +1,7 @@
 {
   "name": "openbriefing",
-  "version": "0.0.1",
-  "description": "Open Briefing Standard (OBS): parser, checker and tools for publishers' own summaries. Draft; v1 is in preparation.",
+  "version": "0.1.0",
+  "description": "Open Briefing Standard (OBS): the reference parser and checker for publishers' own summaries.",
   "keywords": ["open-briefing-standard", "obs", "summary", "metadata", "opengraph", "publishing"],
   "homepage": "https://openbriefingstandard.org",
   "repository": {
@@ -11,5 +11,32 @@
   },
   "bugs": "https://github.com/OpenBriefing/openbriefing/issues",
   "license": "MIT",
-  "files": ["README.md"]
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
+    "./fixtures/*": "./fixtures/*"
+  },
+  "bin": { "openbriefing": "./dist/cli.js" },
+  "files": ["dist", "fixtures", "README.md"],
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "fixtures": "node ../../scripts/make-fixtures.mjs",
+    "expected": "tsx scripts/write-expected.ts",
+    "prepack": "rm -rf fixtures && cp -R ../../spec/fixtures fixtures && npm run build"
+  },
+  "dependencies": {
+    "jsdom": "^26.1.0"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^21.1.7",
+    "@types/node": "^22.15.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.1.0"
+  }
 }
