@@ -13,6 +13,8 @@ Adopting it takes two tags:
 
 ## Status
 
-Draft. Version 1 of the spec, its test fixtures, a reference parser and the `openbriefing` tools (`check`, `generate`, `preview`, `backfill`, `review` and a Ghost integration) are being prepared and will be published here.
+Draft. Read the draft spec: [spec/v1.md](spec/v1.md).
+
+The spec is dedicated to the public domain ([CC0 1.0](LICENSE-SPEC)). The code is [MIT](LICENSE). Version 1 of the spec, its test fixtures, a reference parser and the `openbriefing` tools (`check`, `generate`, `preview`, `backfill`, `review` and a Ghost integration) are being prepared and will be published here.
 
 Website: [openbriefingstandard.org](https://openbriefingstandard.org) (coming soon).
