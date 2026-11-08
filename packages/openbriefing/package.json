@@ -1,0 +1,15 @@
+{
+  "name": "openbriefing",
+  "version": "0.0.1",
+  "description": "Open Briefing Standard (OBS): parser, checker and tools for publishers' own summaries. Draft; v1 is in preparation.",
+  "keywords": ["open-briefing-standard", "obs", "summary", "metadata", "opengraph", "publishing"],
+  "homepage": "https://openbriefingstandard.org",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OpenBriefing/openbriefing.git",
+    "directory": "packages/openbriefing"
+  },
+  "bugs": "https://github.com/OpenBriefing/openbriefing/issues",
+  "license": "MIT",
+  "files": ["README.md"]
+}
