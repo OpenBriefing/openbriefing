@@ -18,7 +18,7 @@
     ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
     "./fixtures/*": "./fixtures/*"
   },
-  "bin": { "openbriefing": "./dist/cli.js" },
+  "bin": { "openbriefing": "dist/cli.js" },
   "files": ["dist", "fixtures", "README.md"],
   "engines": { "node": ">=20" },
   "scripts": {
