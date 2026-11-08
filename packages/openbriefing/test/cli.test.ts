@@ -25,6 +25,14 @@ describe("openbriefing check", () => {
     expect(r.stdout).toContain("item 2");
   });
 
+  it("never sends control characters from a page to the terminal", () => {
+    const html = '<html><head><meta property="obs:modified" content="2026-11-08T14:00:00Z"><meta property="obs:summary" content="Hello \u001b[31mred\u001b]0;pwned\u0007 world"><meta property="obs:attribution" content="From \u001b[2Jus"><meta property="obs:mood" content="x"></head></html>';
+    const r = spawnSync("npx", ["tsx", join("src", "cli.ts"), "check", "-"], { encoding: "utf8", input: html, cwd: join(FIXTURES, "..", "..", "packages", "openbriefing") });
+    expect(r.status).toBe(0);
+    expect(r.stdout).not.toMatch(/[\u0000-\u0008\u000b-\u001f\u007f-\u009f]/u);
+    expect(r.stdout).toContain("\\x1b");
+  });
+
   it("prints JSON with --json", () => {
     const r = run("check", join(FIXTURES, "valid-minimal.html"), "--json");
     expect(JSON.parse(r.stdout).brief.summaries[0].tier).toBe("medium");

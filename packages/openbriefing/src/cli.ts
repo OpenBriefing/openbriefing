@@ -50,10 +50,14 @@ function isFeed(text: string, file: string): boolean {
   return head.startsWith("<?xml") ? /<(rss|feed)\b/iu.test(text.slice(0, 2000)) : /^<(rss|feed)\b/iu.test(head);
 }
 
-const cut = (s: string, n = 60) => (s.length > n ? `${s.slice(0, n - 1)}…` : s).replace(/\n/gu, " ");
+/** Page text is untrusted: show control characters (ANSI escapes and the like) instead of sending them to the terminal. */
+const safe = (s: string) =>
+  s.replace(/[\u0000-\u0008\u000b-\u001f\u007f-\u009f]/gu, (c) => `\\x${c.charCodeAt(0).toString(16).padStart(2, "0")}`);
+
+const cut = (s: string, n = 60) => safe((s.length > n ? `${s.slice(0, n - 1)}…` : s).replace(/\n/gu, " "));
 
 function describe(label: string, r: ParseResult): string {
-  const lines: string[] = [label];
+  const lines: string[] = [safe(label)];
   const b: ObsBrief | undefined = r.brief;
   if (b) {
     const row = (k: string, v: string) => lines.push(`  ${k.padEnd(12)} ${v}`);
@@ -65,14 +69,14 @@ function describe(label: string, r: ParseResult): string {
     }
     b.keep.forEach((k, i) => row(i === 0 ? "keep (core)" : `keep ${i + 1}`, cut(k)));
     row("derive", `${b.derive.mode}; translate ${b.derive.translate ? "yes" : "no"}; combine ${b.derive.combine ? "yes" : "no"}`);
-    if (b.attribution !== undefined) row("attribution", b.attribution);
+    if (b.attribution !== undefined) row("attribution", cut(b.attribution));
     row("preference", b.preference);
-    if (b.lang !== undefined) row("lang", b.lang);
-    row("modified", b.modified);
-    if (b.url !== undefined) row("url", `${b.url}${b.describesThisPage ? "" : "  (describes another page)"}`);
+    if (b.lang !== undefined) row("lang", safe(b.lang));
+    row("modified", safe(b.modified));
+    if (b.url !== undefined) row("url", `${safe(b.url)}${b.describesThisPage ? "" : "  (describes another page)"}`);
   }
-  for (const e of r.errors) lines.push(`  error    ${e}`);
-  for (const w of r.warnings) lines.push(`  warning  ${w}`);
+  for (const e of r.errors) lines.push(`  error    ${safe(e)}`);
+  for (const w of r.warnings) lines.push(`  warning  ${safe(w)}`);
   lines.push(b ? `  ok: usable, ${r.warnings.length} warning${r.warnings.length === 1 ? "" : "s"}` : "  not usable");
   return lines.join("\n");
 }
