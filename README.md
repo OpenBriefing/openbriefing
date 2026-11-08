@@ -22,3 +22,7 @@ npx openbriefing check ./post.html
 The spec is dedicated to the public domain ([CC0 1.0](LICENSE-SPEC)). The code is [MIT](LICENSE). Version 1 of the spec, its test fixtures, a reference parser and the `openbriefing` tools (`check`, `generate`, `preview`, `backfill`, `review` and a Ghost integration) are being prepared and will be published here.
 
 Website: [openbriefingstandard.org](https://openbriefingstandard.org) (coming soon).
+
+## Examples
+
+Three synthetic pages carrying the tags, for hearing a consumer against a real page, are published at <https://openbriefing.github.io/openbriefing/examples/>: a full set of forms, one summary that shorter forms may be cut from, and one marked verbatim. `node scripts/make-examples.mjs` rewrites them.
