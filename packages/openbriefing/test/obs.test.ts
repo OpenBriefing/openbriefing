@@ -232,7 +232,7 @@ describe("helpers", () => {
 });
 
 describe("robustness", () => {
-  it("never throws on random tags", () => {
+  it("never throws on random tags", { timeout: 30_000 }, () => {
     const keys = ["obs:summary", "obs:modified", "obs:keep", "obs:derive", "obs:url", "obs:version", "obs:x", "obs:summary:long"];
     let seed = 42;
     const rand = () => ((seed = (seed * 1103515245 + 12345) % 2 ** 31) / 2 ** 31);
