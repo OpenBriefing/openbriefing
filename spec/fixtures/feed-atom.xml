@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:obs="https://openbriefingstandard.org/ns#">
+  <title>Garden Club Notes</title>
+  <id>https://example.test/</id>
+  <updated>2026-11-08T14:00:00Z</updated>
+  <entry>
+    <title>Spring planting</title>
+    <id>https://example.test/spring-planting/</id>
+    <link rel="alternate" href="https://example.test/spring-planting/"/>
+    <updated>2026-11-08T14:00:00Z</updated>
+    <obs:modified>2026-11-08T14:00:00Z</obs:modified>
+    <obs:summary length="medium">The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next meeting is set for the first week of the month. The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next meeting is set for the first week of the month. The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next meeting is set for the first week of the month.</obs:summary>
+    <obs:summary length="huge">The garden club met on Tuesday to plan the spring.</obs:summary>
+    <obs:keep>Anyone may take vegetables home once the harvest begins.</obs:keep>
+  </entry>
+</feed>

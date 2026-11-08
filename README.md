@@ -13,7 +13,11 @@ Adopting it takes two tags:
 
 ## Status
 
-Draft. Read the draft spec: [spec/v1.md](spec/v1.md).
+Draft. Read the draft spec: [spec/v1.md](spec/v1.md). Test fixtures are in [spec/fixtures](spec/fixtures), and the reference parser and checker are in [packages/openbriefing](packages/openbriefing):
+
+```bash
+npx openbriefing check ./post.html
+```
 
 The spec is dedicated to the public domain ([CC0 1.0](LICENSE-SPEC)). The code is [MIT](LICENSE). Version 1 of the spec, its test fixtures, a reference parser and the `openbriefing` tools (`check`, `generate`, `preview`, `backfill`, `review` and a Ghost integration) are being prepared and will be published here.
 
