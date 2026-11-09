@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { JSDOM } from "jsdom";
-import { mergeObs, normalizeUrl, parseFeedObs, parseObs, tierFor, validateObs, type ParseResult } from "../src/obs.js";
+import { looseText, mergeObs, normalizeUrl, parseFeedObs, parseObs, tierFor, validateObs, type ParseResult } from "../src/obs.js";
 import { FIXTURES, fixtureNames, parsePage, readFixture } from "./helpers.js";
 
 const page = (name: string) => readFixture(`${name}.html`) as ParseResult;
@@ -39,6 +39,14 @@ describe("pages", () => {
     expect(r.brief?.derive).toEqual({ mode: "anchor", translate: false, combine: true });
     expect(r.brief?.attribution).toBe("From the Garden Club newsletter");
     expect(r.brief?.lang).toBe("en-GB");
+    expect(r.brief?.highlights.map((h) => [h.words, h.label, h.inContent])).toEqual([
+      [9, "On the harvest", true],
+      [10, undefined, true],
+    ]);
+  });
+
+  it("valid-minimal has no highlights", () => {
+    expect(page("valid-minimal").brief?.highlights).toEqual([]);
   });
 
   it("name-attribute reads the same as property", () => {
@@ -105,6 +113,55 @@ describe("pages", () => {
     expect(r.brief?.keep[2]).toBe("Children from the school help on the first Saturday.");
     expect(has(r.warnings, "only the first 3")).toBe(true);
     expect(has(r.warnings, "obs:keep #2: 55 words")).toBe(true);
+  });
+
+  it("highlights: in order, labels pair with the highlight before them", () => {
+    const r = page("highlights");
+    expect(r.errors).toEqual([]);
+    expect(r.warnings).toEqual([]);
+    expect(r.brief?.highlights).toEqual([
+      { text: "Anyone may take vegetables home once the harvest begins.", words: 9, label: "On the harvest", inContent: true },
+      { text: "Volunteers agreed to water the beds every second morning.", words: 9, inContent: true },
+      { text: "A new fence will keep the rabbits away from the lettuce.", words: 11, label: "On rabbits", inContent: true },
+    ]);
+  });
+
+  it("highlight-limits: five kept in order, the long one warned, the rest dropped", () => {
+    const r = page("highlight-limits");
+    expect(r.brief?.highlights).toHaveLength(5);
+    expect(r.brief?.highlights[1]?.words).toBe(69);
+    expect(r.brief?.highlights[4]?.text).toBe("Members who cannot dig offered to label the rows instead.");
+    expect(has(r.warnings, "obs:highlight appears 7 times; only the first 5")).toBe(true);
+    expect(has(r.warnings, "obs:highlight #2: 69 words, over its size of 60")).toBe(true);
+    expect(r.warnings).toHaveLength(2);
+  });
+
+  it("highlight-not-in-text: quotes and dashes compare loosely; missing words warn", () => {
+    const r = page("highlight-not-in-text");
+    expect(r.brief?.highlights.map((h) => h.inContent)).toEqual([true, true, false]);
+    expect(r.warnings).toEqual(['obs:highlight "The club bought a tractor for…" is not in the page\'s text (§7)']);
+  });
+
+  it("highlight-label-orphan: the label is ignored with a warning", () => {
+    const r = page("highlight-label-orphan");
+    expect(r.brief?.highlights).toHaveLength(1);
+    expect(r.brief?.highlights[0]?.label).toBeUndefined();
+    expect(r.warnings).toEqual(["obs:highlight:label before any obs:highlight; it is ignored (§3.1)"]);
+  });
+
+  it("highlight-reserved: start and end are ignored without comment", () => {
+    const r = page("highlight-reserved");
+    expect(r.brief?.highlights).toHaveLength(1);
+    expect(r.warnings).toEqual([]);
+  });
+
+  it("a highlight on a page with no body text is neither checked nor warned", () => {
+    const r = parsePage(
+      '<html><head><meta property="obs:modified" content="2026-11-08T14:00:00Z"><meta property="obs:summary" content="A summary."><meta property="obs:highlight" content="A line."></head></html>',
+      "https://example.test/x/",
+    );
+    expect(r.brief?.highlights[0]?.inContent).toBeUndefined();
+    expect(r.warnings).toEqual([]);
   });
 
   it("derive values are case-insensitive; bad ones take the default", () => {
@@ -181,6 +238,7 @@ describe("feeds", () => {
     expect(tiers(a!)).toEqual(["short:60:tiered", "medium:280:inferred"]);
     expect(a?.brief?.derive).toEqual({ mode: "anchor", translate: false, combine: true });
     expect(a?.brief?.keep).toHaveLength(1);
+    expect(a?.brief?.highlights.map((h) => [h.label, h.inContent])).toEqual([["On the harvest", undefined], [undefined, undefined]]);
     expect(a?.brief?.attribution).toBe("From the Garden Club newsletter");
     expect(b?.brief?.derive).toEqual({ mode: "anchor", translate: true, combine: false });
     expect(tiers(b!)).toEqual(["short:90:inferred"]);
@@ -211,6 +269,20 @@ describe("validateObs", () => {
     expect(r.brief).toEqual({ ...brief, lang: "en-GB" });
   });
 
+  it("carries highlights, labels and a producer's inContent; drops one with no text", () => {
+    const r = validateObs({
+      modified: "2026-11-08T14:00:00Z",
+      summaries: [{ text: "A summary." }],
+      highlights: [{ text: "One line.", label: "On one" }, { text: "Two lines.", inContent: false }, { label: "No text" }, "not an object"],
+    });
+    expect(r.errors).toEqual([]);
+    expect(r.brief?.highlights).toEqual([
+      { text: "One line.", words: 2, label: "On one" },
+      { text: "Two lines.", words: 2, inContent: false },
+    ]);
+    expect(r.warnings).toEqual(["A highlight has no text; it is ignored"]);
+  });
+
   it("rejects non-objects and empty objects", () => {
     expect(validateObs(null).brief).toBeUndefined();
     expect(validateObs([]).brief).toBeUndefined();
@@ -221,6 +293,12 @@ describe("validateObs", () => {
 describe("helpers", () => {
   it("tierFor", () => {
     expect([1, 120, 121, 500, 501].map(tierFor)).toEqual(["short", "short", "medium", "medium", "long"]);
+  });
+
+  it("looseText", () => {
+    expect(looseText("Last year\u2019s \u201cbest\u201d fence \u2014 by far")).toBe('last year\'s "best" fence-by far');
+    expect(looseText("  two   spaces ")).toBe("two spaces");
+    expect(looseText("ﬁne")).toBe("fine");
   });
 
   it("normalizeUrl", () => {
@@ -266,6 +344,14 @@ describe("spec examples", () => {
     const r = parsePage(full.code, "https://example.com/ask-the-author-first/");
     expect(r.errors).toEqual([]);
     expect(r.brief?.keep).toHaveLength(2);
+    expect(r.brief?.highlights).toHaveLength(1);
+  });
+
+  it("the highlights example parses, with its label paired", () => {
+    const block = blocks.find((b) => b.code.includes("obs:highlight:label"))!;
+    const r = parsePage(`<html><head><meta property="obs:modified" content="2026-11-08T14:00:00Z"><meta property="obs:summary" content="A summary.">${block.code}</head></html>`, "https://example.com/x/");
+    expect(r.errors).toEqual([]);
+    expect(r.brief?.highlights.map((h) => h.label)).toEqual(["On listening", undefined]);
   });
 
   it("the quick start's two tags parse with no errors", () => {
@@ -282,6 +368,7 @@ describe("spec examples", () => {
     expect(r.errors).toEqual([]);
     expect(r.brief?.derive.translate).toBe(false);
     expect(r.brief?.summaries.map((s) => s.tier)).toEqual(["short"]);
+    expect(r.brief?.highlights).toEqual([{ text: "A passage from the post, word for word.", words: 8, label: "On control" }]);
   });
 });
 

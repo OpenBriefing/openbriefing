@@ -68,6 +68,12 @@ function describe(label: string, r: ParseResult): string {
       row(`summary`, `${s.tier.padEnd(6)} ${String(s.words).padStart(5)} words  (target ${lo}–${hi})  ${s.from}`);
     }
     b.keep.forEach((k, i) => row(i === 0 ? "keep (core)" : `keep ${i + 1}`, cut(k)));
+    b.highlights.forEach((h, i) => {
+      const notes = [`${h.words}/${SIZES.highlight} words`];
+      if (h.label !== undefined) notes.push(cut(h.label, 30));
+      if (h.inContent === false) notes.push("not in the text");
+      row(`highlight ${i + 1}`, `${cut(h.text)}  (${notes.join(", ")})`);
+    });
     row("derive", `${b.derive.mode}; translate ${b.derive.translate ? "yes" : "no"}; combine ${b.derive.combine ? "yes" : "no"}`);
     if (b.attribution !== undefined) row("attribution", cut(b.attribution));
     row("preference", b.preference);

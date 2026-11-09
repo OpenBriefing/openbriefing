@@ -68,6 +68,9 @@ page("valid-full", [
   meta("obs:summary:short", words(60)),
   meta("obs:summary:long", words(650)),
   ...KEEP.map((k) => meta("obs:keep", k)),
+  meta("obs:highlight", SENTENCES[8]),
+  meta("obs:highlight:label", "On the harvest"),
+  meta("obs:highlight", SENTENCES[7]),
   meta("obs:attribution", "From the Garden Club newsletter"),
   meta("obs:derive", "anchor"),
   meta("obs:derive:translate", "no"),
@@ -109,6 +112,56 @@ page("keep-limits", [
   meta("obs:keep", KEEP[2]),
   meta("obs:keep", "A fourth line that is dropped."),
   meta("obs:keep", "A fifth line that is dropped."),
+]);
+
+// Highlights (§7)
+page("highlights", [
+  meta("obs:modified", MOD),
+  meta("obs:summary", words(280)),
+  meta("obs:highlight", SENTENCES[8]),
+  meta("obs:highlight:label", "On the harvest"),
+  meta("obs:highlight", SENTENCES[1]),
+  meta("obs:highlight", SENTENCES[4]),
+  meta("obs:highlight:label", "On rabbits"),
+]);
+
+page("highlight-limits", [
+  meta("obs:modified", MOD),
+  meta("obs:summary", words(280)),
+  meta("obs:highlight", SENTENCES[0]),
+  meta("obs:highlight", words(69)),
+  meta("obs:highlight", SENTENCES[2]),
+  meta("obs:highlight", SENTENCES[3]),
+  meta("obs:highlight", SENTENCES[5]),
+  meta("obs:highlight", "A sixth highlight that is dropped."),
+  meta("obs:highlight", "A seventh highlight that is dropped."),
+]);
+
+page(
+  "highlight-not-in-text",
+  [
+    meta("obs:modified", MOD),
+    meta("obs:summary", words(280)),
+    meta("obs:highlight", "Most of the seeds came from last year\u2019s harvest."),
+    meta("obs:highlight", "The fence \u2014 a new one \u2014 keeps the rabbits out."),
+    meta("obs:highlight", "The club bought a tractor for the heavy digging."),
+  ],
+  { body: "  <p>The fence - a new one - keeps the rabbits out.</p>\n" },
+);
+
+page("highlight-label-orphan", [
+  meta("obs:modified", MOD),
+  meta("obs:summary", words(280)),
+  meta("obs:highlight:label", "A label with nothing before it"),
+  meta("obs:highlight", SENTENCES[8]),
+]);
+
+page("highlight-reserved", [
+  meta("obs:modified", MOD),
+  meta("obs:summary", words(280)),
+  meta("obs:highlight", SENTENCES[8]),
+  meta("obs:highlight:start", "00:01:12"),
+  meta("obs:highlight:end", "00:01:30"),
 ]);
 
 page("derive-verbatim", [meta("obs:modified", MOD), meta("obs:summary", words(280)), meta("obs:derive", "VERBATIM"), meta("obs:derive:combine", "no")]);
@@ -156,6 +209,8 @@ const FEED_ITEMS = `
       <obs:summary>${words(280)}</obs:summary>
       <obs:summary length="short">${words(60)}</obs:summary>
       <obs:keep>${KEEP[0]}</obs:keep>
+      <obs:highlight label="On the harvest">${SENTENCES[8]}</obs:highlight>
+      <obs:highlight>${SENTENCES[7]}</obs:highlight>
       <obs:derive translate="no">anchor</obs:derive>
       <obs:attribution>From the Garden Club newsletter</obs:attribution>
     </item>

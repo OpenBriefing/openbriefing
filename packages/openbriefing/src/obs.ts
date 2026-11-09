@@ -22,6 +22,16 @@ export interface ObsSummary {
   from: "tiered" | "inferred";
 }
 
+export interface ObsHighlight {
+  /** The passage, as written. */
+  text: string;
+  words: number;
+  /** obs:highlight:label, 6 words or fewer, when given. */
+  label?: string;
+  /** False when the page's text does not contain the highlight (§7). Absent for feed items and empty pages. */
+  inContent?: boolean;
+}
+
 export interface ObsBrief {
   version: number;
   /** obs:modified, as given (ISO 8601). */
@@ -36,6 +46,8 @@ export interface ObsBrief {
   summaries: ObsSummary[];
   /** Priority order, at most 3. keep[0] is the core message (§6). */
   keep: string[];
+  /** Priority order, at most 5 (§7). Empty when none. */
+  highlights: ObsHighlight[];
   derive: { mode: DeriveMode; translate: boolean; combine: boolean };
   attribution?: string;
   preference: Preference;
@@ -58,6 +70,9 @@ export const SIZES = {
   keep: 40,
   attribution: 12,
   keepMax: 3,
+  highlight: 60,
+  highlightLabel: 6,
+  highlightMax: 5,
   tiers: {
     short: { target: [40, 80] },
     medium: { target: [200, 350] },
@@ -85,7 +100,23 @@ export function countWords(text: string): number {
 // The property bag: every carrier (page, feed, object) is turned into one,
 // then a single function builds the brief, so the rules live in one place.
 
-type Bag = Map<string, string[]>;
+interface RawHighlight {
+  text: string;
+  label?: string;
+  inContent?: boolean;
+}
+
+/**
+ * Every carrier is read into one of these. Properties lose their interleaving
+ * in the map, so highlights, whose labels pair by document order (§3.1), are
+ * kept in a list of their own as they are met.
+ */
+interface Bag {
+  props: Map<string, string[]>;
+  highlights: RawHighlight[];
+}
+
+const newBag = (): Bag => ({ props: new Map(), highlights: [] });
 
 const KNOWN = new Set([
   "obs:modified",
@@ -96,6 +127,8 @@ const KNOWN = new Set([
   "obs:title",
   "obs:headline",
   "obs:keep",
+  "obs:highlight",
+  "obs:highlight:label",
   "obs:derive",
   "obs:derive:translate",
   "obs:derive:combine",
@@ -107,10 +140,26 @@ const KNOWN = new Set([
 ]);
 
 function put(bag: Bag, key: string, value: string): void {
-  const list = bag.get(key);
+  const list = bag.props.get(key);
   if (list) list.push(value);
-  else bag.set(key, [value]);
+  else bag.props.set(key, [value]);
 }
+
+/** Files one property, routing highlights and their labels to the ordered list (§3.1). */
+function collect(bag: Bag, key: string, value: string, warnings: string[]): void {
+  if (key === "obs:highlight") {
+    bag.highlights.push({ text: value });
+  } else if (key === "obs:highlight:label") {
+    const last = bag.highlights[bag.highlights.length - 1];
+    if (last === undefined) warnings.push("obs:highlight:label before any obs:highlight; it is ignored (§3.1)");
+    else if (last.label === undefined) last.label = value;
+    else warnings.push(`obs:highlight #${bag.highlights.length} has two labels; the first is used (§3.1)`);
+  } else {
+    put(bag, key, value);
+  }
+}
+
+const isEmpty = (bag: Bag): boolean => bag.props.size === 0 && bag.highlights.length === 0;
 
 interface Context {
   /** The URL the tags were read from, used to resolve and compare obs:url. */
@@ -120,7 +169,7 @@ interface Context {
 }
 
 function first(bag: Bag, key: string, warnings: string[]): string | undefined {
-  const list = bag.get(key);
+  const list = bag.props.get(key);
   if (!list || list.length === 0) return undefined;
   if (list.length > 1 && key !== "obs:keep") {
     warnings.push(`${key} appears ${list.length} times; the first is used (§3.1)`);
@@ -136,12 +185,12 @@ function cleanText(key: string, raw: string, warnings: string[]): string | undef
   let text = raw;
   if (TAG_RE.test(text)) {
     text = text.replace(TAG_RE, "");
-    warnings.push(`${key}: HTML removed; values are plain text (§8)`);
+    warnings.push(`${key}: HTML removed; values are plain text (§9)`);
   }
   TAG_RE.lastIndex = 0;
   text = text.replace(/\r\n?/gu, "\n").trim();
   if (text === "") return undefined;
-  if (URL_RE.test(text)) warnings.push(`${key}: contains a URL; summaries should not (§8)`);
+  if (URL_RE.test(text)) warnings.push(`${key}: contains a URL; summaries should not (§9)`);
   return text;
 }
 
@@ -168,7 +217,7 @@ function validModified(v: string): boolean {
 
 const TRACKING = /^(?:utm_.*|fbclid|gclid)$/iu;
 
-/** URL comparison of §11: scheme and host case, trailing slash, tracking parameters. */
+/** URL comparison of §12: scheme and host case, trailing slash, tracking parameters. */
 export function normalizeUrl(input: string, base?: string): string | undefined {
   let u: URL;
   try {
@@ -193,9 +242,10 @@ function build(bag: Bag, ctx: Context, extraWarnings: string[] = []): ParseResul
   const errors: string[] = [];
   const warnings: string[] = [...extraWarnings];
 
-  for (const key of bag.keys()) {
+  for (const key of bag.props.keys()) {
     if (KNOWN.has(key)) continue;
-    if (key.startsWith("obs:audio:") || key === "obs:audio") continue; // reserved, §14
+    if (key.startsWith("obs:audio:") || key === "obs:audio") continue; // reserved, §15
+    if (key === "obs:highlight:start" || key === "obs:highlight:end") continue; // reserved, §15
     warnings.push(`${key} is not an OBS v1 property and is ignored (§3.1)`);
   }
 
@@ -258,7 +308,7 @@ function build(bag: Bag, ctx: Context, extraWarnings: string[] = []): ParseResul
   if (headline !== undefined) sizeWarning("obs:headline", countWords(headline), SIZES.headline, warnings);
 
   // Keep lines (§6)
-  const keepAll = (bag.get("obs:keep") ?? [])
+  const keepAll = (bag.props.get("obs:keep") ?? [])
     .map((raw) => cleanText("obs:keep", raw, warnings))
     .filter((v): v is string => v !== undefined);
   if (keepAll.length > SIZES.keepMax) {
@@ -266,6 +316,28 @@ function build(bag: Bag, ctx: Context, extraWarnings: string[] = []): ParseResul
   }
   const keep = keepAll.slice(0, SIZES.keepMax);
   keep.forEach((k, i) => sizeWarning(`obs:keep #${i + 1}`, countWords(k), SIZES.keep, warnings));
+
+  // Highlights (§7)
+  const highlightsAll: ObsHighlight[] = [];
+  for (const raw of bag.highlights) {
+    const t = cleanText("obs:highlight", raw.text, warnings);
+    if (t === undefined) continue;
+    const h: ObsHighlight = { text: t, words: countWords(t) };
+    if (raw.label !== undefined) {
+      const label = cleanText("obs:highlight:label", raw.label, warnings);
+      if (label !== undefined) h.label = label;
+    }
+    if (typeof raw.inContent === "boolean") h.inContent = raw.inContent;
+    highlightsAll.push(h);
+  }
+  if (highlightsAll.length > SIZES.highlightMax) {
+    warnings.push(`obs:highlight appears ${highlightsAll.length} times; only the first ${SIZES.highlightMax} are used (§3)`);
+  }
+  const highlights = highlightsAll.slice(0, SIZES.highlightMax);
+  highlights.forEach((h, i) => {
+    sizeWarning(`obs:highlight #${i + 1}`, h.words, SIZES.highlight, warnings);
+    if (h.label !== undefined) sizeWarning(`obs:highlight:label #${i + 1}`, countWords(h.label), SIZES.highlightLabel, warnings);
+  });
 
   // Derivation (§5)
   const mode = enumValue("obs:derive", first(bag, "obs:derive", warnings), ["verbatim", "anchor", "open"] as const, "anchor", warnings);
@@ -279,7 +351,7 @@ function build(bag: Bag, ctx: Context, extraWarnings: string[] = []): ParseResul
 
   const lang = first(bag, "obs:lang", warnings)?.trim() || ctx.lang || undefined;
 
-  // Identity (§11)
+  // Identity (§12)
   let url: string | undefined;
   let describesThisPage = true;
   const rawUrl = first(bag, "obs:url", warnings)?.trim();
@@ -298,6 +370,7 @@ function build(bag: Bag, ctx: Context, extraWarnings: string[] = []): ParseResul
     describesThisPage,
     summaries,
     keep,
+    highlights,
     derive: { mode, translate, combine },
     preference,
   };
@@ -307,6 +380,35 @@ function build(bag: Bag, ctx: Context, extraWarnings: string[] = []): ParseResul
   if (attribution !== undefined) brief.attribution = attribution;
   if (lang !== undefined) brief.lang = lang;
   return { brief, errors, warnings };
+}
+
+/**
+ * The loose comparison of §7: compatibility forms, straight quotes for curly,
+ * one kind of dash, one kind of space, one case. Words themselves must match.
+ */
+export function looseText(s: string): string {
+  return s
+    .normalize("NFKC")
+    .replace(/[\u2018\u2019\u201a\u201b\u2032]/gu, "'")
+    .replace(/[\u201c\u201d\u201e\u201f\u2033]/gu, '"')
+    .replace(/[\u2010-\u2015\u2212]/gu, "-")
+    .replace(/\s*-\s*/gu, "-")
+    .replace(/\s+/gu, " ")
+    .trim()
+    .toLowerCase();
+}
+
+/** Sets inContent on each highlight from the page's text; skipped when the body is empty (§7). */
+function checkContent(brief: ObsBrief, bodyText: string | undefined, warnings: string[]): void {
+  const body = bodyText === undefined ? "" : looseText(bodyText);
+  if (body === "") return;
+  for (const h of brief.highlights) {
+    h.inContent = body.includes(looseText(h.text));
+    if (!h.inContent) {
+      const head = h.text.split(/\s+/u).slice(0, 6).join(" ");
+      warnings.push(`obs:highlight "${head}…" is not in the page's text (§7)`);
+    }
+  }
 }
 
 function guard(fn: () => ParseResult): ParseResult {
@@ -326,7 +428,7 @@ function guard(fn: () => ParseResult): ParseResult {
  */
 export function parseObs(doc: Document, pageUrl: string): ParseResult {
   return guard(() => {
-    const bag: Bag = new Map();
+    const bag = newBag();
     const warnings: string[] = [];
     let inBody = false;
     for (const meta of Array.from(doc.getElementsByTagName("meta"))) {
@@ -336,9 +438,9 @@ export function parseObs(doc: Document, pageUrl: string): ParseResult {
       if (content === null) continue;
       if (content.trim() === "") continue;
       if (!inBody && doc.body && doc.body.contains(meta)) inBody = true;
-      put(bag, key, content);
+      collect(bag, key, content, warnings);
     }
-    if (bag.size === 0) return { errors: ["No obs: tags on the page"], warnings };
+    if (isEmpty(bag)) return { errors: ["No obs: tags on the page"], warnings };
     if (inBody) warnings.push("Some obs: tags are in <body>; they belong in <head> (§3.1)");
 
     const canonicalHref = doc.querySelector('link[rel~="canonical"]')?.getAttribute("href") ?? undefined;
@@ -347,12 +449,14 @@ export function parseObs(doc: Document, pageUrl: string): ParseResult {
     const ctx: Context = {};
     if (canonical !== undefined) ctx.canonical = canonical;
     if (lang !== undefined) ctx.lang = lang;
-    return build(bag, ctx, warnings);
+    const result = build(bag, ctx, warnings);
+    if (result.brief) checkContent(result.brief, doc.body?.textContent ?? undefined, result.warnings);
+    return result;
   });
 }
 
 // ---------------------------------------------------------------------------
-// Feeds (§13)
+// Feeds (§14)
 
 function obsChildren(item: Element): Element[] {
   return Array.from(item.children).filter((el) => {
@@ -388,12 +492,16 @@ function itemLink(item: Element): string | undefined {
  */
 export function parseFeedObs(item: Element, itemUrl?: string): ParseResult {
   return guard(() => {
-    const bag: Bag = new Map();
+    const bag = newBag();
     const warnings: string[] = [];
     for (const el of obsChildren(item)) {
       const name = localName(el);
       const value = el.textContent ?? "";
-      if (name === "summary") {
+      if (name === "highlight") {
+        collect(bag, "obs:highlight", value, warnings);
+        const label = el.getAttribute("label");
+        if (label !== null) collect(bag, "obs:highlight:label", label, warnings);
+      } else if (name === "summary") {
         const length = el.getAttribute("length")?.trim().toLowerCase();
         if (length === undefined || length === "") put(bag, "obs:summary", value);
         else if ((TIERS as readonly string[]).includes(length)) put(bag, `obs:summary:${length}`, value);
@@ -408,7 +516,7 @@ export function parseFeedObs(item: Element, itemUrl?: string): ParseResult {
         put(bag, `obs:${name}`, value);
       }
     }
-    if (bag.size === 0) return { errors: ["No OBS elements on the item"], warnings };
+    if (isEmpty(bag)) return { errors: ["No OBS elements on the item"], warnings };
     const link = itemUrl ?? itemLink(item);
     const canonical = link ? normalizeUrl(link) : undefined;
     const ctx: Context = {};
@@ -427,7 +535,7 @@ export function validateObs(input: unknown): ParseResult {
       return { errors: ["Expected an object in the ObsBrief shape"], warnings: [] };
     }
     const o = input as Record<string, unknown>;
-    const bag: Bag = new Map();
+    const bag = newBag();
     const warnings: string[] = [];
     const str = (v: unknown): string | undefined => (typeof v === "string" ? v : undefined);
     const set = (key: string, v: unknown) => {
@@ -458,6 +566,23 @@ export function validateObs(input: unknown): ParseResult {
       }
     }
     if (Array.isArray(o.keep)) for (const k of o.keep) set("obs:keep", k);
+    if (Array.isArray(o.highlights)) {
+      for (const h of o.highlights) {
+        if (!h || typeof h !== "object") continue;
+        const rec = h as Record<string, unknown>;
+        const t = str(rec.text);
+        if (t === undefined) {
+          warnings.push("A highlight has no text; it is ignored");
+          continue;
+        }
+        const raw: RawHighlight = { text: t };
+        const label = str(rec.label);
+        if (label !== undefined) raw.label = label;
+        // The producer saw the page; its verdict is carried through.
+        if (typeof rec.inContent === "boolean") raw.inContent = rec.inContent;
+        bag.highlights.push(raw);
+      }
+    }
     if (o.derive && typeof o.derive === "object") {
       const d = o.derive as Record<string, unknown>;
       set("obs:derive", d.mode);
@@ -473,7 +598,7 @@ export function validateObs(input: unknown): ParseResult {
 }
 
 // ---------------------------------------------------------------------------
-// Feed against page (§13)
+// Feed against page (§14)
 
 /** The later obs:modified stands; on a tie, the page stands. */
 export function mergeObs(page?: ObsBrief, feed?: ObsBrief): ObsBrief | undefined {
