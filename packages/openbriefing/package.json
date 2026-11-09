@@ -1,6 +1,6 @@
 {
   "name": "openbriefing",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Open Briefing Standard (OBS): the reference parser and checker for publishers' own summaries.",
   "keywords": [
     "open-briefing-standard",

@@ -44,6 +44,13 @@ const KEEP = [
   "The elevator will not be inspected until December.",
 ];
 const ATTRIBUTION = "From the Millbrook Courier";
+// Highlights: sentences of the article, word for word (spec §7).
+const HIGHLIGHTS = [
+  ["Half the people who come in here are reading with their ears now, she said.", "On listening"],
+  ["Late fees on children's books have been dropped for good, a change the town council approved in the spring."],
+  ["Retired teacher Walter Brandt, who said he had visited the library every week for forty years, called the new reading room the best thing the town had built since the bridge."],
+];
+const highlight = ([text, label]) => (label ? [meta("obs:highlight", text), meta("obs:highlight:label", label)] : [meta("obs:highlight", text)]);
 
 function page(name, heading, note, tags) {
   const url = `${BASE}/${name}.html`;
@@ -77,19 +84,21 @@ ${body}
 const common = [meta("obs:modified", MOD), meta("obs:title", TITLE), meta("obs:attribution", ATTRIBUTION)];
 
 const pages = [
-  page("full-set", TITLE, "It carries a headline, a short and a medium summary, three keep lines and an attribution, so every length is the author's own words.", [
+  page("full-set", TITLE, "It carries a headline, a short and a medium summary, three keep lines, three highlights (one with a label) and an attribution, so every length is the author's own words.", [
     ...common,
     meta("obs:headline", HEADLINE),
     meta("obs:summary:short", SHORT),
     meta("obs:summary:medium", MEDIUM),
     ...KEEP.map((k) => meta("obs:keep", k)),
+    ...HIGHLIGHTS.flatMap(highlight),
   ]),
-  page("one-summary", TITLE, "It carries one summary and two keep lines. A tool may cut shorter forms from that summary, but not write longer ones.", [
+  page("one-summary", TITLE, "It carries one summary, two keep lines and one highlight. A tool may cut shorter forms from that summary, but not write longer ones.", [
     ...common,
     meta("obs:summary", MEDIUM),
     ...KEEP.slice(0, 2).map((k) => meta("obs:keep", k)),
+    ...highlight(HIGHLIGHTS[0]),
   ]),
-  page("verbatim", TITLE, "It carries one summary marked verbatim: a tool may play it as written or not at all, and may make no other form from it.", [
+  page("verbatim", TITLE, "It carries one summary marked verbatim and no highlights: a tool may play the summary as written or not at all, and may make no other form from it. Verbatim does not create highlights.", [
     ...common,
     meta("obs:summary", MEDIUM),
     meta("obs:derive", "verbatim"),

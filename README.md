@@ -11,9 +11,15 @@ Adopting it takes two tags:
 <meta property="obs:modified" content="2026-11-08T14:00:00Z">
 ```
 
+A publisher can also mark passages of the content that may be quoted on their own, with credit:
+
+```html
+<meta property="obs:highlight" content="A line from the content, word for word.">
+```
+
 ## Status
 
-Draft. Read the draft spec: [spec/v1.md](spec/v1.md). Test fixtures are in [spec/fixtures](spec/fixtures), and the reference parser and checker are in [packages/openbriefing](packages/openbriefing):
+Draft 1.1 (`obs:highlight` added; every 1.0 page is a valid 1.1 page). Read the draft spec: [spec/v1.md](spec/v1.md). Test fixtures are in [spec/fixtures](spec/fixtures), and the reference parser and checker are in [packages/openbriefing](packages/openbriefing):
 
 ```bash
 npx openbriefing check ./post.html
@@ -25,4 +31,4 @@ Website: [openbriefingstandard.org](https://openbriefingstandard.org) (coming so
 
 ## Examples
 
-Three synthetic pages carrying the tags, for hearing a consumer against a real page, are published at <https://openbriefing.github.io/openbriefing/examples/>: a full set of forms, one summary that shorter forms may be cut from, and one marked verbatim. `node scripts/make-examples.mjs` rewrites them.
+Three synthetic pages carrying the tags, for hearing a consumer against a real page, are published at <https://openbriefing.github.io/openbriefing/examples/>: a full set of forms with three highlights, one summary that shorter forms may be cut from with one highlight, and one marked verbatim with none. `node scripts/make-examples.mjs` rewrites them.

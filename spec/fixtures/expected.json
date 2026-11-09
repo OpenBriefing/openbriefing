@@ -19,6 +19,7 @@
         }
       ],
       "keep": [],
+      "highlights": [],
       "derive": {
         "mode": "anchor",
         "translate": true,
@@ -46,6 +47,7 @@
         }
       ],
       "keep": [],
+      "highlights": [],
       "derive": {
         "mode": "anchor",
         "translate": true,
@@ -71,6 +73,7 @@
         }
       ],
       "keep": [],
+      "highlights": [],
       "derive": {
         "mode": "anchor",
         "translate": true,
@@ -98,6 +101,7 @@
         }
       ],
       "keep": [],
+      "highlights": [],
       "derive": {
         "mode": "anchor",
         "translate": true,
@@ -123,6 +127,7 @@
         }
       ],
       "keep": [],
+      "highlights": [],
       "derive": {
         "mode": "anchor",
         "translate": true,
@@ -150,6 +155,7 @@
         }
       ],
       "keep": [],
+      "highlights": [],
       "derive": {
         "mode": "anchor",
         "translate": true,
@@ -178,6 +184,7 @@
         }
       ],
       "keep": [],
+      "highlights": [],
       "derive": {
         "mode": "verbatim",
         "translate": true,
@@ -203,6 +210,7 @@
         }
       ],
       "keep": [],
+      "highlights": [],
       "derive": {
         "mode": "anchor",
         "translate": true,
@@ -234,6 +242,7 @@
         "keep": [
           "Anyone may take vegetables home once the harvest begins."
         ],
+        "highlights": [],
         "derive": {
           "mode": "anchor",
           "translate": true,
@@ -270,6 +279,17 @@
         "keep": [
           "Anyone may take vegetables home once the harvest begins."
         ],
+        "highlights": [
+          {
+            "text": "Anyone may take vegetables home once the harvest begins.",
+            "words": 9,
+            "label": "On the harvest"
+          },
+          {
+            "text": "Children from the school will help on the first Saturday.",
+            "words": 10
+          }
+        ],
         "derive": {
           "mode": "anchor",
           "translate": false,
@@ -296,6 +316,7 @@
           }
         ],
         "keep": [],
+        "highlights": [],
         "derive": {
           "mode": "anchor",
           "translate": true,
@@ -323,6 +344,216 @@
         }
       ],
       "keep": [],
+      "highlights": [],
+      "derive": {
+        "mode": "anchor",
+        "translate": true,
+        "combine": true
+      },
+      "preference": "summary",
+      "lang": "en"
+    },
+    "errors": [],
+    "warnings": []
+  },
+  "highlight-label-orphan.html": {
+    "brief": {
+      "version": 1,
+      "modified": "2026-11-08T14:00:00Z",
+      "describesThisPage": true,
+      "summaries": [
+        {
+          "tier": "medium",
+          "text": "The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next meeting is set for the first week of the month. The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next meeting is set for the first week of the month. The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone.",
+          "words": 280,
+          "from": "inferred"
+        }
+      ],
+      "keep": [],
+      "highlights": [
+        {
+          "text": "Anyone may take vegetables home once the harvest begins.",
+          "words": 9,
+          "inContent": true
+        }
+      ],
+      "derive": {
+        "mode": "anchor",
+        "translate": true,
+        "combine": true
+      },
+      "preference": "summary",
+      "lang": "en"
+    },
+    "errors": [],
+    "warnings": [
+      "obs:highlight:label before any obs:highlight; it is ignored (§3.1)"
+    ]
+  },
+  "highlight-limits.html": {
+    "brief": {
+      "version": 1,
+      "modified": "2026-11-08T14:00:00Z",
+      "describesThisPage": true,
+      "summaries": [
+        {
+          "tier": "medium",
+          "text": "The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next meeting is set for the first week of the month. The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next meeting is set for the first week of the month. The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone.",
+          "words": 280,
+          "from": "inferred"
+        }
+      ],
+      "keep": [],
+      "highlights": [
+        {
+          "text": "The garden club met on Tuesday to plan the spring planting.",
+          "words": 11,
+          "inContent": true
+        },
+        {
+          "text": "The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools.",
+          "words": 69,
+          "inContent": true
+        },
+        {
+          "text": "Most of the seeds came from last year's harvest.",
+          "words": 9,
+          "inContent": true
+        },
+        {
+          "text": "The committee chose tomatoes, beans and three kinds of squash.",
+          "words": 10,
+          "inContent": true
+        },
+        {
+          "text": "Members who cannot dig offered to label the rows instead.",
+          "words": 10,
+          "inContent": true
+        }
+      ],
+      "derive": {
+        "mode": "anchor",
+        "translate": true,
+        "combine": true
+      },
+      "preference": "summary",
+      "lang": "en"
+    },
+    "errors": [],
+    "warnings": [
+      "obs:highlight appears 7 times; only the first 5 are used (§3)",
+      "obs:highlight #2: 69 words, over its size of 60 (§4)"
+    ]
+  },
+  "highlight-not-in-text.html": {
+    "brief": {
+      "version": 1,
+      "modified": "2026-11-08T14:00:00Z",
+      "describesThisPage": true,
+      "summaries": [
+        {
+          "tier": "medium",
+          "text": "The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next meeting is set for the first week of the month. The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next meeting is set for the first week of the month. The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone.",
+          "words": 280,
+          "from": "inferred"
+        }
+      ],
+      "keep": [],
+      "highlights": [
+        {
+          "text": "Most of the seeds came from last year’s harvest.",
+          "words": 9,
+          "inContent": true
+        },
+        {
+          "text": "The fence — a new one — keeps the rabbits out.",
+          "words": 11,
+          "inContent": true
+        },
+        {
+          "text": "The club bought a tractor for the heavy digging.",
+          "words": 9,
+          "inContent": false
+        }
+      ],
+      "derive": {
+        "mode": "anchor",
+        "translate": true,
+        "combine": true
+      },
+      "preference": "summary",
+      "lang": "en"
+    },
+    "errors": [],
+    "warnings": [
+      "obs:highlight \"The club bought a tractor for…\" is not in the page's text (§7)"
+    ]
+  },
+  "highlight-reserved.html": {
+    "brief": {
+      "version": 1,
+      "modified": "2026-11-08T14:00:00Z",
+      "describesThisPage": true,
+      "summaries": [
+        {
+          "tier": "medium",
+          "text": "The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next meeting is set for the first week of the month. The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next meeting is set for the first week of the month. The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone.",
+          "words": 280,
+          "from": "inferred"
+        }
+      ],
+      "keep": [],
+      "highlights": [
+        {
+          "text": "Anyone may take vegetables home once the harvest begins.",
+          "words": 9,
+          "inContent": true
+        }
+      ],
+      "derive": {
+        "mode": "anchor",
+        "translate": true,
+        "combine": true
+      },
+      "preference": "summary",
+      "lang": "en"
+    },
+    "errors": [],
+    "warnings": []
+  },
+  "highlights.html": {
+    "brief": {
+      "version": 1,
+      "modified": "2026-11-08T14:00:00Z",
+      "describesThisPage": true,
+      "summaries": [
+        {
+          "tier": "medium",
+          "text": "The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next meeting is set for the first week of the month. The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next meeting is set for the first week of the month. The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone.",
+          "words": 280,
+          "from": "inferred"
+        }
+      ],
+      "keep": [],
+      "highlights": [
+        {
+          "text": "Anyone may take vegetables home once the harvest begins.",
+          "words": 9,
+          "label": "On the harvest",
+          "inContent": true
+        },
+        {
+          "text": "Volunteers agreed to water the beds every second morning.",
+          "words": 9,
+          "inContent": true
+        },
+        {
+          "text": "A new fence will keep the rabbits away from the lettuce.",
+          "words": 11,
+          "label": "On rabbits",
+          "inContent": true
+        }
+      ],
       "derive": {
         "mode": "anchor",
         "translate": true,
@@ -348,6 +579,7 @@
         }
       ],
       "keep": [],
+      "highlights": [],
       "derive": {
         "mode": "anchor",
         "translate": true,
@@ -377,6 +609,7 @@
         "The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered.",
         "Children from the school help on the first Saturday."
       ],
+      "highlights": [],
       "derive": {
         "mode": "anchor",
         "translate": true,
@@ -405,6 +638,7 @@
         }
       ],
       "keep": [],
+      "highlights": [],
       "derive": {
         "mode": "anchor",
         "translate": true,
@@ -430,6 +664,7 @@
         }
       ],
       "keep": [],
+      "highlights": [],
       "derive": {
         "mode": "anchor",
         "translate": true,
@@ -440,8 +675,8 @@
     },
     "errors": [],
     "warnings": [
-      "obs:summary: HTML removed; values are plain text (§8)",
-      "obs:summary: contains a URL; summaries should not (§8)"
+      "obs:summary: HTML removed; values are plain text (§9)",
+      "obs:summary: contains a URL; summaries should not (§9)"
     ]
   },
   "missing-modified.html": {
@@ -470,6 +705,7 @@
         }
       ],
       "keep": [],
+      "highlights": [],
       "derive": {
         "mode": "anchor",
         "translate": true,
@@ -495,6 +731,7 @@
         }
       ],
       "keep": [],
+      "highlights": [],
       "derive": {
         "mode": "anchor",
         "translate": true,
@@ -528,6 +765,7 @@
         }
       ],
       "keep": [],
+      "highlights": [],
       "derive": {
         "mode": "anchor",
         "translate": true,
@@ -559,6 +797,7 @@
         }
       ],
       "keep": [],
+      "highlights": [],
       "derive": {
         "mode": "anchor",
         "translate": true,
@@ -584,6 +823,7 @@
         }
       ],
       "keep": [],
+      "highlights": [],
       "derive": {
         "mode": "anchor",
         "translate": true,
@@ -609,6 +849,7 @@
         }
       ],
       "keep": [],
+      "highlights": [],
       "derive": {
         "mode": "anchor",
         "translate": true,
@@ -642,6 +883,7 @@
         }
       ],
       "keep": [],
+      "highlights": [],
       "derive": {
         "mode": "anchor",
         "translate": true,
@@ -667,6 +909,7 @@
         }
       ],
       "keep": [],
+      "highlights": [],
       "derive": {
         "mode": "anchor",
         "translate": true,
@@ -694,6 +937,7 @@
         }
       ],
       "keep": [],
+      "highlights": [],
       "derive": {
         "mode": "anchor",
         "translate": true,
@@ -720,6 +964,7 @@
         }
       ],
       "keep": [],
+      "highlights": [],
       "derive": {
         "mode": "anchor",
         "translate": true,
@@ -762,6 +1007,19 @@
         "Volunteers water the beds every second morning.",
         "Children from the school help on the first Saturday."
       ],
+      "highlights": [
+        {
+          "text": "Anyone may take vegetables home once the harvest begins.",
+          "words": 9,
+          "label": "On the harvest",
+          "inContent": true
+        },
+        {
+          "text": "Children from the school will help on the first Saturday.",
+          "words": 10,
+          "inContent": true
+        }
+      ],
       "derive": {
         "mode": "anchor",
         "translate": false,
@@ -790,6 +1048,7 @@
         }
       ],
       "keep": [],
+      "highlights": [],
       "derive": {
         "mode": "anchor",
         "translate": true,

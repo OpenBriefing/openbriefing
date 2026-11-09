@@ -13,6 +13,17 @@ describe("openbriefing check", () => {
     for (const s of ["title", "headline", "short", "medium", "long", "keep (core)", "translate no", "From the Garden Club"]) expect(r.stdout).toContain(s);
   });
 
+  it("lists highlights with their words and labels, and names one not in the text", () => {
+    const r = run("check", join(FIXTURES, "highlights.html"));
+    expect(r.status).toBe(0);
+    expect(r.stdout).toContain("highlight 1");
+    expect(r.stdout).toContain("(9/60 words, On the harvest)");
+    const missing = run("check", join(FIXTURES, "highlight-not-in-text.html"));
+    expect(missing.status).toBe(0);
+    expect(missing.stdout).toContain("not in the text");
+    expect(missing.stdout).toContain('obs:highlight "The club bought a tractor for…" is not in the page\'s text');
+  });
+
   it("exits 1 for missing-modified", () => {
     const r = run("check", join(FIXTURES, "missing-modified.html"));
     expect(r.status).toBe(1);
@@ -36,5 +47,6 @@ describe("openbriefing check", () => {
   it("prints JSON with --json", () => {
     const r = run("check", join(FIXTURES, "valid-minimal.html"), "--json");
     expect(JSON.parse(r.stdout).brief.summaries[0].tier).toBe("medium");
+    expect(JSON.parse(run("check", join(FIXTURES, "highlights.html"), "--json").stdout).brief.highlights).toHaveLength(3);
   });
 }, 60_000);
