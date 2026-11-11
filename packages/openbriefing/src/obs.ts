@@ -13,6 +13,8 @@ export const OBS_NS = "https://openbriefingstandard.org/ns#";
 export type ObsTier = "short" | "medium" | "long";
 export type DeriveMode = "verbatim" | "anchor" | "open";
 export type Preference = "summary" | "full";
+/** Where a brief's modified time came from (§13). */
+export type ModifiedFrom = "obs" | "article" | "feed" | "none";
 
 export interface ObsSummary {
   tier: ObsTier;
@@ -34,8 +36,10 @@ export interface ObsHighlight {
 
 export interface ObsBrief {
   version: number;
-  /** obs:modified, as given (ISO 8601). */
-  modified: string;
+  /** The effective modified time, ISO 8601 (§13). Absent when no source gave one. */
+  modified?: string;
+  /** Where `modified` came from: obs:modified, article:modified_time, the feed item's date, or nowhere. */
+  modifiedFrom: ModifiedFrom;
   /** obs:url, normalized, when given. */
   url?: string;
   /** False when obs:url names content other than this page (§11). */
@@ -166,6 +170,8 @@ interface Context {
   canonical?: string;
   /** Fallback language (<html lang>). */
   lang?: string;
+  /** A modified time from outside the obs: tags, used when obs:modified is absent or does not parse (§13). */
+  alt?: { value: string; from: "article" | "feed" };
 }
 
 function first(bag: Bag, key: string, warnings: string[]): string | undefined {
@@ -268,12 +274,21 @@ function build(bag: Bag, ctx: Context, extraWarnings: string[] = []): ParseResul
     }
   }
 
-  // obs:modified (required)
-  const modified = first(bag, "obs:modified", warnings)?.trim();
-  if (modified === undefined || modified === "") {
-    errors.push("obs:modified is missing; it is required (§3)");
-  } else if (!validModified(modified)) {
-    errors.push(`obs:modified: "${modified}" is not an ISO 8601 date and time (§3)`);
+  // The effective modified time (§13): obs:modified, else the carrier's own date, else none.
+  let modified: string | undefined;
+  let modifiedFrom: ModifiedFrom = "none";
+  const rawModified = first(bag, "obs:modified", warnings)?.trim();
+  if (rawModified !== undefined && rawModified !== "") {
+    if (validModified(rawModified)) {
+      modified = rawModified;
+      modifiedFrom = "obs";
+    } else {
+      warnings.push(`obs:modified: "${rawModified}" is not an ISO 8601 date and time; it is ignored (§13)`);
+    }
+  }
+  if (modified === undefined && ctx.alt !== undefined && validModified(ctx.alt.value)) {
+    modified = ctx.alt.value;
+    modifiedFrom = ctx.alt.from;
   }
 
   // Summaries (§4)
@@ -366,7 +381,8 @@ function build(bag: Bag, ctx: Context, extraWarnings: string[] = []): ParseResul
 
   const brief: ObsBrief = {
     version,
-    modified: modified!,
+    ...(modified !== undefined ? { modified } : {}),
+    modifiedFrom,
     describesThisPage,
     summaries,
     keep,
@@ -422,6 +438,16 @@ function guard(fn: () => ParseResult): ParseResult {
 // ---------------------------------------------------------------------------
 // Pages (§3.1)
 
+function metaContent(doc: Document, key: string): string | undefined {
+  for (const meta of Array.from(doc.getElementsByTagName("meta"))) {
+    const k = (meta.getAttribute("property") ?? meta.getAttribute("name") ?? "").trim().toLowerCase();
+    if (k !== key) continue;
+    const v = meta.getAttribute("content")?.trim();
+    if (v) return v;
+  }
+  return undefined;
+}
+
 /**
  * Reads a page's obs: meta tags. `pageUrl` is where the page was fetched
  * from; the page's <link rel="canonical"> takes precedence for §11.
@@ -438,6 +464,10 @@ export function parseObs(doc: Document, pageUrl: string): ParseResult {
       if (content === null) continue;
       if (content.trim() === "") continue;
       if (!inBody && doc.body && doc.body.contains(meta)) inBody = true;
+      // An unescaped double quote ends the attribute early; the rest becomes attributes with a quote in their names.
+      if (Array.from(meta.attributes).some((a) => a.name.includes('"'))) {
+        warnings.push(`${key}: the value is cut short at a double quote; write a double quote inside a value as &quot; (§9)`);
+      }
       collect(bag, key, content, warnings);
     }
     if (isEmpty(bag)) return { errors: ["No obs: tags on the page"], warnings };
@@ -449,6 +479,8 @@ export function parseObs(doc: Document, pageUrl: string): ParseResult {
     const ctx: Context = {};
     if (canonical !== undefined) ctx.canonical = canonical;
     if (lang !== undefined) ctx.lang = lang;
+    const articleModified = metaContent(doc, "article:modified_time");
+    if (articleModified !== undefined) ctx.alt = { value: articleModified, from: "article" };
     const result = build(bag, ctx, warnings);
     if (result.brief) checkContent(result.brief, doc.body?.textContent ?? undefined, result.warnings);
     return result;
@@ -481,6 +513,21 @@ function itemLink(item: Element): string | undefined {
       if (rel === null || rel === "alternate") return href.trim();
     } else if (el.textContent?.trim()) {
       return el.textContent.trim();
+    }
+  }
+  return undefined;
+}
+
+/** The item's own date (§13): Atom <updated>, or RSS <pubDate> turned into ISO 8601. */
+function itemDate(item: Element): string | undefined {
+  for (const el of Array.from(item.children)) {
+    if (el.namespaceURI === OBS_NS) continue;
+    const text = el.textContent?.trim();
+    if (!text) continue;
+    if (el.localName === "updated" && validModified(text)) return text;
+    if (el.localName === "pubDate") {
+      const ms = Date.parse(text);
+      if (!Number.isNaN(ms)) return new Date(ms).toISOString();
     }
   }
   return undefined;
@@ -521,6 +568,8 @@ export function parseFeedObs(item: Element, itemUrl?: string): ParseResult {
     const canonical = link ? normalizeUrl(link) : undefined;
     const ctx: Context = {};
     if (canonical !== undefined) ctx.canonical = canonical;
+    const date = itemDate(item);
+    if (date !== undefined) ctx.alt = { value: date, from: "feed" };
     return build(bag, ctx, warnings);
   });
 }
@@ -543,7 +592,13 @@ export function validateObs(input: unknown): ParseResult {
       if (s !== undefined) put(bag, key, s);
       else if (v !== undefined && v !== null) warnings.push(`${key} is not a string; it is ignored`);
     };
-    set("obs:modified", o.modified);
+    // A modified time that came from the carrier is carried through with its source.
+    const ctx: Context = {};
+    if ((o.modifiedFrom === "article" || o.modifiedFrom === "feed") && typeof o.modified === "string") {
+      ctx.alt = { value: o.modified, from: o.modifiedFrom };
+    } else {
+      set("obs:modified", o.modified);
+    }
     if (typeof o.version === "number") put(bag, "obs:version", String(o.version));
     set("obs:url", o.url);
     set("obs:title", o.title);
@@ -589,7 +644,8 @@ export function validateObs(input: unknown): ParseResult {
       if (typeof d.translate === "boolean") put(bag, "obs:derive:translate", d.translate ? "yes" : "no");
       if (typeof d.combine === "boolean") put(bag, "obs:derive:combine", d.combine ? "yes" : "no");
     }
-    const result = build(bag, {}, warnings);
+    if (isEmpty(bag)) return { errors: ["No summary: obs:summary or a tiered summary is required (§3)"], warnings };
+    const result = build(bag, ctx, warnings);
     if (result.brief && typeof o.describesThisPage === "boolean") {
       result.brief.describesThisPage = o.describesThisPage;
     }
@@ -600,9 +656,104 @@ export function validateObs(input: unknown): ParseResult {
 // ---------------------------------------------------------------------------
 // Feed against page (§14)
 
-/** The later obs:modified stands; on a tie, the page stands. */
+/**
+ * The later effective modified time stands. When the two are equal, or either
+ * side has none, the page stands.
+ */
 export function mergeObs(page?: ObsBrief, feed?: ObsBrief): ObsBrief | undefined {
   if (!page) return feed;
   if (!feed) return page;
+  if (page.modified === undefined || feed.modified === undefined) return page;
   return Date.parse(feed.modified) > Date.parse(page.modified) ? feed : page;
+}
+
+// ---------------------------------------------------------------------------
+// Change detection (§13)
+
+/**
+ * A stable hash of what a brief says: every text value and every setting, in a
+ * fixed order. Two briefs with the same fingerprint present the same. It leaves
+ * out the modified time, and everything that depends on where the tags were
+ * read rather than on what they say (the language fallback, describesThisPage,
+ * a highlight's inContent), so a page and its feed item agree. Readers compare
+ * fingerprints to tell a change, above all when there is no modified time.
+ *
+ * SHA-256 of the canonical JSON below, in hex, first 16 characters.
+ */
+export function fingerprint(brief: ObsBrief): string {
+  const canonical = JSON.stringify([
+    "obs1",
+    brief.version,
+    brief.url ?? null,
+    brief.title ?? null,
+    brief.headline ?? null,
+    brief.summaries.map((s) => [s.tier, s.text]),
+    brief.keep,
+    brief.highlights.map((h) => [h.text, h.label ?? null]),
+    [brief.derive.mode, brief.derive.translate, brief.derive.combine],
+    brief.attribution ?? null,
+    brief.preference,
+  ]);
+  return sha256Hex(utf8(canonical)).slice(0, 16);
+}
+
+/** UTF-8 bytes, without TextEncoder so the module needs no platform API. */
+function utf8(text: string): number[] {
+  const out: number[] = [];
+  for (const ch of text) {
+    const c = ch.codePointAt(0)!;
+    if (c < 0x80) out.push(c);
+    else if (c < 0x800) out.push(0xc0 | (c >> 6), 0x80 | (c & 63));
+    else if (c < 0x10000) out.push(0xe0 | (c >> 12), 0x80 | ((c >> 6) & 63), 0x80 | (c & 63));
+    else out.push(0xf0 | (c >> 18), 0x80 | ((c >> 12) & 63), 0x80 | ((c >> 6) & 63), 0x80 | (c & 63));
+  }
+  return out;
+}
+
+const SHA_K = [
+  0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+  0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+  0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+  0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+  0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+  0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+  0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+  0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
+];
+
+/** SHA-256 (FIPS 180-4), synchronous, so fingerprint() is too. */
+function sha256Hex(bytes: number[]): string {
+  const h = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
+  const bits = bytes.length * 8;
+  const msg = bytes.slice();
+  msg.push(0x80);
+  while (msg.length % 64 !== 56) msg.push(0);
+  const hi = Math.floor(bits / 0x100000000);
+  const lo = bits >>> 0;
+  msg.push((hi >>> 24) & 255, (hi >>> 16) & 255, (hi >>> 8) & 255, hi & 255, (lo >>> 24) & 255, (lo >>> 16) & 255, (lo >>> 8) & 255, lo & 255);
+  const w = new Array<number>(64).fill(0);
+  const rotr = (x: number, n: number) => (x >>> n) | (x << (32 - n));
+  for (let i = 0; i < msg.length; i += 64) {
+    for (let t = 0; t < 16; t++) w[t] = ((msg[i + t * 4]! << 24) | (msg[i + t * 4 + 1]! << 16) | (msg[i + t * 4 + 2]! << 8) | msg[i + t * 4 + 3]!) >>> 0;
+    for (let t = 16; t < 64; t++) {
+      const a = w[t - 15]!;
+      const b = w[t - 2]!;
+      const s0 = rotr(a, 7) ^ rotr(a, 18) ^ (a >>> 3);
+      const s1 = rotr(b, 17) ^ rotr(b, 19) ^ (b >>> 10);
+      w[t] = (w[t - 16]! + s0 + w[t - 7]! + s1) >>> 0;
+    }
+    let [a, b, c, d, e, f, g, k] = h as [number, number, number, number, number, number, number, number];
+    for (let t = 0; t < 64; t++) {
+      const S1 = rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25);
+      const ch = (e & f) ^ (~e & g);
+      const t1 = (k + S1 + ch + SHA_K[t]! + w[t]!) >>> 0;
+      const S0 = rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22);
+      const maj = (a & b) ^ (a & c) ^ (b & c);
+      const t2 = (S0 + maj) >>> 0;
+      k = g; g = f; f = e; e = (d + t1) >>> 0; d = c; c = b; b = a; a = (t1 + t2) >>> 0;
+    }
+    h[0] = (h[0]! + a) >>> 0; h[1] = (h[1]! + b) >>> 0; h[2] = (h[2]! + c) >>> 0; h[3] = (h[3]! + d) >>> 0;
+    h[4] = (h[4]! + e) >>> 0; h[5] = (h[5]! + f) >>> 0; h[6] = (h[6]! + g) >>> 0; h[7] = (h[7]! + k) >>> 0;
+  }
+  return h.map((x) => x.toString(16).padStart(8, "0")).join("");
 }

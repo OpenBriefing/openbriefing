@@ -86,6 +86,13 @@ page("tier-collision", [meta("obs:modified", MOD), meta("obs:summary", words(250
 page("missing-modified", [meta("obs:summary", words(280))]);
 
 page("bad-modified", [meta("obs:summary", words(280)), meta("obs:modified", "last Tuesday")]);
+// The page's own article:modified_time stands in for a missing obs:modified (§13).
+page("modified-from-article", [meta("obs:summary", words(280)), meta("article:modified_time", "2026-11-07T09:00:00.000Z")]);
+// obs:modified wins over article:modified_time; a bad obs:modified falls through to it.
+page("modified-obs-over-article", [meta("obs:summary", words(280)), meta("obs:modified", MOD), meta("article:modified_time", "2026-11-07T09:00:00.000Z")]);
+page("modified-bad-then-article", [meta("obs:summary", words(280)), meta("obs:modified", "last Tuesday"), meta("article:modified_time", "2026-11-07T09:00:00.000Z")]);
+// A double quote written without &quot; ends the value early (§9).
+page("unescaped-quote", [`  <meta property="obs:summary" content="The club said "welcome" to every new member.">`]);
 
 page("missing-summary", [meta("obs:modified", MOD), meta("obs:headline", HEADLINE)]);
 
@@ -248,6 +255,51 @@ writeFileSync(join(out, "feed-atom.xml"), `<?xml version="1.0" encoding="utf-8"?
     <obs:keep>${KEEP[0]}</obs:keep>
   </entry>
 </feed>
+`);
+
+// The effective modified time (§13): the feed item's own date stands in for obs:modified.
+writeFileSync(join(out, "feed-modified-from-updated.xml"), `<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:obs="https://openbriefingstandard.org/ns#">
+  <title>Garden Club Notes</title>
+  <id>https://example.test/</id>
+  <updated>${MOD}</updated>
+  <entry>
+    <title>Spring planting</title>
+    <id>https://example.test/spring-planting/</id>
+    <link rel="alternate" href="https://example.test/spring-planting/"/>
+    <updated>2026-11-09T08:15:00Z</updated>
+    <obs:summary>${words(280)}</obs:summary>
+  </entry>
+  <entry>
+    <title>Tools and compost</title>
+    <id>https://example.test/tools/</id>
+    <link rel="alternate" href="https://example.test/tools/"/>
+    <obs:summary>${words(90)}</obs:summary>
+  </entry>
+</feed>
+`);
+
+writeFileSync(join(out, "feed-modified-from-pubdate.xml"), `<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:obs="https://openbriefingstandard.org/ns#">
+  <channel>
+    <title>Garden Club Notes</title>
+    <link>https://example.test/</link>
+    <description>Synthetic fixture feed</description>
+    <item>
+      <title>Spring planting</title>
+      <link>https://example.test/spring-planting/</link>
+      <pubDate>Mon, 09 Nov 2026 08:15:00 GMT</pubDate>
+      <obs:summary>${words(280)}</obs:summary>
+    </item>
+    <item>
+      <title>Tools and compost</title>
+      <link>https://example.test/tools/</link>
+      <pubDate>Mon, 09 Nov 2026 08:15:00 GMT</pubDate>
+      <obs:modified>${MOD}</obs:modified>
+      <obs:summary>${words(90)}</obs:summary>
+    </item>
+  </channel>
+</rss>
 `);
 
 // Feed against page: the same content, the feed item modified later.

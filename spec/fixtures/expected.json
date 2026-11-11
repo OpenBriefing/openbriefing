@@ -1,14 +1,38 @@
 {
   "bad-modified.html": {
-    "errors": [
-      "obs:modified: \"last Tuesday\" is not an ISO 8601 date and time (§3)"
+    "brief": {
+      "version": 1,
+      "modifiedFrom": "none",
+      "describesThisPage": true,
+      "summaries": [
+        {
+          "tier": "medium",
+          "text": "The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next meeting is set for the first week of the month. The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next meeting is set for the first week of the month. The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone.",
+          "words": 280,
+          "from": "inferred"
+        }
+      ],
+      "keep": [],
+      "highlights": [],
+      "derive": {
+        "mode": "anchor",
+        "translate": true,
+        "combine": true
+      },
+      "preference": "summary",
+      "lang": "en"
+    },
+    "errors": [],
+    "warnings": [
+      "obs:modified: \"last Tuesday\" is not an ISO 8601 date and time; it is ignored (§13)"
     ],
-    "warnings": []
+    "fingerprint": "a6f65da1b607d7c0"
   },
   "band-120.html": {
     "brief": {
       "version": 1,
       "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "obs",
       "describesThisPage": true,
       "summaries": [
         {
@@ -31,12 +55,14 @@
     "errors": [],
     "warnings": [
       "obs:summary: 120 words, over its size of 80 (§4)"
-    ]
+    ],
+    "fingerprint": "62e40b61cba0967a"
   },
   "band-121.html": {
     "brief": {
       "version": 1,
       "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "obs",
       "describesThisPage": true,
       "summaries": [
         {
@@ -57,12 +83,14 @@
       "lang": "en"
     },
     "errors": [],
-    "warnings": []
+    "warnings": [],
+    "fingerprint": "37071a9b20f827d1"
   },
   "band-500.html": {
     "brief": {
       "version": 1,
       "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "obs",
       "describesThisPage": true,
       "summaries": [
         {
@@ -85,12 +113,14 @@
     "errors": [],
     "warnings": [
       "obs:summary: 500 words, over its size of 350 (§4)"
-    ]
+    ],
+    "fingerprint": "deb36e445c650307"
   },
   "band-501.html": {
     "brief": {
       "version": 1,
       "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "obs",
       "describesThisPage": true,
       "summaries": [
         {
@@ -111,12 +141,14 @@
       "lang": "en"
     },
     "errors": [],
-    "warnings": []
+    "warnings": [],
+    "fingerprint": "5c9230d221c8dd7b"
   },
   "body-tags.html": {
     "brief": {
       "version": 1,
       "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "obs",
       "describesThisPage": true,
       "summaries": [
         {
@@ -139,12 +171,14 @@
     "errors": [],
     "warnings": [
       "Some obs: tags are in <body>; they belong in <head> (§3.1)"
-    ]
+    ],
+    "fingerprint": "a6f65da1b607d7c0"
   },
   "derive-bad.html": {
     "brief": {
       "version": 1,
       "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "obs",
       "describesThisPage": true,
       "summaries": [
         {
@@ -168,12 +202,14 @@
     "warnings": [
       "obs:derive: \"loose\" is not one of verbatim, anchor, open; the default \"anchor\" applies",
       "obs:derive:translate: \"maybe\" is not one of yes, no; the default \"yes\" applies"
-    ]
+    ],
+    "fingerprint": "a6f65da1b607d7c0"
   },
   "derive-verbatim.html": {
     "brief": {
       "version": 1,
       "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "obs",
       "describesThisPage": true,
       "summaries": [
         {
@@ -194,12 +230,14 @@
       "lang": "en"
     },
     "errors": [],
-    "warnings": []
+    "warnings": [],
+    "fingerprint": "7e526b20f55a5eaf"
   },
   "duplicate-headline.html": {
     "brief": {
       "version": 1,
       "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "obs",
       "describesThisPage": true,
       "summaries": [
         {
@@ -223,13 +261,15 @@
     "errors": [],
     "warnings": [
       "obs:headline appears 2 times; the first is used (§3.1)"
-    ]
+    ],
+    "fingerprint": "b44690eedde1d9a8"
   },
   "feed-atom.xml": [
     {
       "brief": {
         "version": 1,
         "modified": "2026-11-08T14:00:00Z",
+        "modifiedFrom": "obs",
         "describesThisPage": true,
         "summaries": [
           {
@@ -253,7 +293,123 @@
       "errors": [],
       "warnings": [
         "<obs:summary length=\"huge\"> is not short, medium or long; it is ignored"
-      ]
+      ],
+      "fingerprint": "33b935f05012960a"
+    }
+  ],
+  "feed-modified-from-pubdate.xml": [
+    {
+      "brief": {
+        "version": 1,
+        "modified": "2026-11-09T08:15:00.000Z",
+        "modifiedFrom": "feed",
+        "describesThisPage": true,
+        "summaries": [
+          {
+            "tier": "medium",
+            "text": "The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next meeting is set for the first week of the month. The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next meeting is set for the first week of the month. The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone.",
+            "words": 280,
+            "from": "inferred"
+          }
+        ],
+        "keep": [],
+        "highlights": [],
+        "derive": {
+          "mode": "anchor",
+          "translate": true,
+          "combine": true
+        },
+        "preference": "summary"
+      },
+      "errors": [],
+      "warnings": [],
+      "fingerprint": "a6f65da1b607d7c0"
+    },
+    {
+      "brief": {
+        "version": 1,
+        "modified": "2026-11-08T14:00:00Z",
+        "modifiedFrom": "obs",
+        "describesThisPage": true,
+        "summaries": [
+          {
+            "tier": "short",
+            "text": "The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next.",
+            "words": 90,
+            "from": "inferred"
+          }
+        ],
+        "keep": [],
+        "highlights": [],
+        "derive": {
+          "mode": "anchor",
+          "translate": true,
+          "combine": true
+        },
+        "preference": "summary"
+      },
+      "errors": [],
+      "warnings": [
+        "obs:summary: 90 words, over its size of 80 (§4)"
+      ],
+      "fingerprint": "98e471ecdd8300de"
+    }
+  ],
+  "feed-modified-from-updated.xml": [
+    {
+      "brief": {
+        "version": 1,
+        "modified": "2026-11-09T08:15:00Z",
+        "modifiedFrom": "feed",
+        "describesThisPage": true,
+        "summaries": [
+          {
+            "tier": "medium",
+            "text": "The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next meeting is set for the first week of the month. The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next meeting is set for the first week of the month. The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone.",
+            "words": 280,
+            "from": "inferred"
+          }
+        ],
+        "keep": [],
+        "highlights": [],
+        "derive": {
+          "mode": "anchor",
+          "translate": true,
+          "combine": true
+        },
+        "preference": "summary"
+      },
+      "errors": [],
+      "warnings": [],
+      "fingerprint": "a6f65da1b607d7c0"
+    },
+    {
+      "brief": {
+        "version": 1,
+        "modifiedFrom": "none",
+        "describesThisPage": true,
+        "summaries": [
+          {
+            "tier": "short",
+            "text": "The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next.",
+            "words": 90,
+            "from": "inferred"
+          }
+        ],
+        "keep": [],
+        "highlights": [],
+        "derive": {
+          "mode": "anchor",
+          "translate": true,
+          "combine": true
+        },
+        "preference": "summary"
+      },
+      "errors": [],
+      "warnings": [
+        "obs:summary: 90 words, over its size of 80 (§4)"
+      ],
+      "fingerprint": "98e471ecdd8300de"
     }
   ],
   "feed-rss.xml": [
@@ -261,6 +417,7 @@
       "brief": {
         "version": 1,
         "modified": "2026-11-08T14:00:00Z",
+        "modifiedFrom": "obs",
         "describesThisPage": true,
         "summaries": [
           {
@@ -300,12 +457,14 @@
         "attribution": "From the Garden Club newsletter"
       },
       "errors": [],
-      "warnings": []
+      "warnings": [],
+      "fingerprint": "d3c093b429849ed3"
     },
     {
       "brief": {
         "version": 1,
         "modified": "2026-11-09T09:30:00Z",
+        "modifiedFrom": "obs",
         "describesThisPage": true,
         "summaries": [
           {
@@ -327,13 +486,15 @@
       "errors": [],
       "warnings": [
         "obs:summary: 90 words, over its size of 80 (§4)"
-      ]
+      ],
+      "fingerprint": "99778738bcd07f78"
     }
   ],
   "feed-vs-page.html": {
     "brief": {
       "version": 1,
       "modified": "2026-11-08T10:00:00Z",
+      "modifiedFrom": "obs",
       "describesThisPage": true,
       "summaries": [
         {
@@ -354,12 +515,14 @@
       "lang": "en"
     },
     "errors": [],
-    "warnings": []
+    "warnings": [],
+    "fingerprint": "a6f65da1b607d7c0"
   },
   "highlight-label-orphan.html": {
     "brief": {
       "version": 1,
       "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "obs",
       "describesThisPage": true,
       "summaries": [
         {
@@ -388,12 +551,14 @@
     "errors": [],
     "warnings": [
       "obs:highlight:label before any obs:highlight; it is ignored (§3.1)"
-    ]
+    ],
+    "fingerprint": "56061e235058b613"
   },
   "highlight-limits.html": {
     "brief": {
       "version": 1,
       "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "obs",
       "describesThisPage": true,
       "summaries": [
         {
@@ -443,12 +608,14 @@
     "warnings": [
       "obs:highlight appears 7 times; only the first 5 are used (§3)",
       "obs:highlight #2: 69 words, over its size of 60 (§4)"
-    ]
+    ],
+    "fingerprint": "028c59d02a4f55a7"
   },
   "highlight-not-in-text.html": {
     "brief": {
       "version": 1,
       "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "obs",
       "describesThisPage": true,
       "summaries": [
         {
@@ -487,12 +654,14 @@
     "errors": [],
     "warnings": [
       "obs:highlight \"The club bought a tractor for…\" is not in the page's text (§7)"
-    ]
+    ],
+    "fingerprint": "edfa867b76f7d252"
   },
   "highlight-reserved.html": {
     "brief": {
       "version": 1,
       "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "obs",
       "describesThisPage": true,
       "summaries": [
         {
@@ -519,12 +688,14 @@
       "lang": "en"
     },
     "errors": [],
-    "warnings": []
+    "warnings": [],
+    "fingerprint": "56061e235058b613"
   },
   "highlights.html": {
     "brief": {
       "version": 1,
       "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "obs",
       "describesThisPage": true,
       "summaries": [
         {
@@ -563,12 +734,14 @@
       "lang": "en"
     },
     "errors": [],
-    "warnings": []
+    "warnings": [],
+    "fingerprint": "c9dab479e93968ce"
   },
   "injection.html": {
     "brief": {
       "version": 1,
       "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "obs",
       "describesThisPage": true,
       "summaries": [
         {
@@ -589,12 +762,14 @@
       "lang": "en"
     },
     "errors": [],
-    "warnings": []
+    "warnings": [],
+    "fingerprint": "b151cf6892b005d8"
   },
   "keep-limits.html": {
     "brief": {
       "version": 1,
       "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "obs",
       "describesThisPage": true,
       "summaries": [
         {
@@ -622,12 +797,14 @@
     "warnings": [
       "obs:keep appears 5 times; only the first 3 are used (§3)",
       "obs:keep #2: 55 words, over its size of 40 (§4)"
-    ]
+    ],
+    "fingerprint": "309baa8b22c1f658"
   },
   "lang-fallback.html": {
     "brief": {
       "version": 1,
       "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "obs",
       "describesThisPage": true,
       "summaries": [
         {
@@ -648,12 +825,14 @@
       "lang": "fr"
     },
     "errors": [],
-    "warnings": []
+    "warnings": [],
+    "fingerprint": "a6f65da1b607d7c0"
   },
   "markup-in-text.html": {
     "brief": {
       "version": 1,
       "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "obs",
       "describesThisPage": true,
       "summaries": [
         {
@@ -677,24 +856,13 @@
     "warnings": [
       "obs:summary: HTML removed; values are plain text (§9)",
       "obs:summary: contains a URL; summaries should not (§9)"
-    ]
+    ],
+    "fingerprint": "badfb745d3b9eb5b"
   },
   "missing-modified.html": {
-    "errors": [
-      "obs:modified is missing; it is required (§3)"
-    ],
-    "warnings": []
-  },
-  "missing-summary.html": {
-    "errors": [
-      "No summary: obs:summary or a tiered summary is required (§3)"
-    ],
-    "warnings": []
-  },
-  "name-attribute.html": {
     "brief": {
       "version": 1,
-      "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "none",
       "describesThisPage": true,
       "summaries": [
         {
@@ -715,12 +883,134 @@
       "lang": "en"
     },
     "errors": [],
+    "warnings": [],
+    "fingerprint": "a6f65da1b607d7c0"
+  },
+  "missing-summary.html": {
+    "errors": [
+      "No summary: obs:summary or a tiered summary is required (§3)"
+    ],
     "warnings": []
+  },
+  "modified-bad-then-article.html": {
+    "brief": {
+      "version": 1,
+      "modified": "2026-11-07T09:00:00.000Z",
+      "modifiedFrom": "article",
+      "describesThisPage": true,
+      "summaries": [
+        {
+          "tier": "medium",
+          "text": "The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next meeting is set for the first week of the month. The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next meeting is set for the first week of the month. The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone.",
+          "words": 280,
+          "from": "inferred"
+        }
+      ],
+      "keep": [],
+      "highlights": [],
+      "derive": {
+        "mode": "anchor",
+        "translate": true,
+        "combine": true
+      },
+      "preference": "summary",
+      "lang": "en"
+    },
+    "errors": [],
+    "warnings": [
+      "obs:modified: \"last Tuesday\" is not an ISO 8601 date and time; it is ignored (§13)"
+    ],
+    "fingerprint": "a6f65da1b607d7c0"
+  },
+  "modified-from-article.html": {
+    "brief": {
+      "version": 1,
+      "modified": "2026-11-07T09:00:00.000Z",
+      "modifiedFrom": "article",
+      "describesThisPage": true,
+      "summaries": [
+        {
+          "tier": "medium",
+          "text": "The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next meeting is set for the first week of the month. The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next meeting is set for the first week of the month. The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone.",
+          "words": 280,
+          "from": "inferred"
+        }
+      ],
+      "keep": [],
+      "highlights": [],
+      "derive": {
+        "mode": "anchor",
+        "translate": true,
+        "combine": true
+      },
+      "preference": "summary",
+      "lang": "en"
+    },
+    "errors": [],
+    "warnings": [],
+    "fingerprint": "a6f65da1b607d7c0"
+  },
+  "modified-obs-over-article.html": {
+    "brief": {
+      "version": 1,
+      "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "obs",
+      "describesThisPage": true,
+      "summaries": [
+        {
+          "tier": "medium",
+          "text": "The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next meeting is set for the first week of the month. The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next meeting is set for the first week of the month. The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone.",
+          "words": 280,
+          "from": "inferred"
+        }
+      ],
+      "keep": [],
+      "highlights": [],
+      "derive": {
+        "mode": "anchor",
+        "translate": true,
+        "combine": true
+      },
+      "preference": "summary",
+      "lang": "en"
+    },
+    "errors": [],
+    "warnings": [],
+    "fingerprint": "a6f65da1b607d7c0"
+  },
+  "name-attribute.html": {
+    "brief": {
+      "version": 1,
+      "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "obs",
+      "describesThisPage": true,
+      "summaries": [
+        {
+          "tier": "medium",
+          "text": "The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next meeting is set for the first week of the month. The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next meeting is set for the first week of the month. The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone.",
+          "words": 280,
+          "from": "inferred"
+        }
+      ],
+      "keep": [],
+      "highlights": [],
+      "derive": {
+        "mode": "anchor",
+        "translate": true,
+        "combine": true
+      },
+      "preference": "summary",
+      "lang": "en"
+    },
+    "errors": [],
+    "warnings": [],
+    "fingerprint": "a6f65da1b607d7c0"
   },
   "newer-version.html": {
     "brief": {
       "version": 2,
       "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "obs",
       "describesThisPage": true,
       "summaries": [
         {
@@ -743,7 +1033,8 @@
     "errors": [],
     "warnings": [
       "obs:version 2 is newer than this reader (v1); unknown tags are ignored"
-    ]
+    ],
+    "fingerprint": "859fc28e57ca31e8"
   },
   "no-tags.html": {
     "errors": [
@@ -755,6 +1046,7 @@
     "brief": {
       "version": 1,
       "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "obs",
       "describesThisPage": true,
       "summaries": [
         {
@@ -781,12 +1073,14 @@
       "obs:summary: 1400 words, over its size of 800 (§4)",
       "obs:title: 20 words, over its size of 12 (§4)",
       "obs:headline: 60 words, over its size of 40 (§4)"
-    ]
+    ],
+    "fingerprint": "776a48c561087d3c"
   },
   "paragraphs.html": {
     "brief": {
       "version": 1,
       "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "obs",
       "describesThisPage": true,
       "summaries": [
         {
@@ -807,12 +1101,14 @@
       "lang": "en"
     },
     "errors": [],
-    "warnings": []
+    "warnings": [],
+    "fingerprint": "6c0ab6f8c289a0cd"
   },
   "preference-full.html": {
     "brief": {
       "version": 1,
       "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "obs",
       "describesThisPage": true,
       "summaries": [
         {
@@ -833,12 +1129,14 @@
       "lang": "en"
     },
     "errors": [],
-    "warnings": []
+    "warnings": [],
+    "fingerprint": "770fb334ad73babd"
   },
   "tier-collision.html": {
     "brief": {
       "version": 1,
       "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "obs",
       "describesThisPage": true,
       "summaries": [
         {
@@ -861,12 +1159,14 @@
     "errors": [],
     "warnings": [
       "obs:summary (250 words) falls in the medium tier, which obs:summary:medium already fills; it is set aside (§4)"
-    ]
+    ],
+    "fingerprint": "95f4210332140a15"
   },
   "tiered-only.html": {
     "brief": {
       "version": 1,
       "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "obs",
       "describesThisPage": true,
       "summaries": [
         {
@@ -893,12 +1193,43 @@
       "lang": "en"
     },
     "errors": [],
-    "warnings": []
+    "warnings": [],
+    "fingerprint": "bd010e347f94ac10"
+  },
+  "unescaped-quote.html": {
+    "brief": {
+      "version": 1,
+      "modifiedFrom": "none",
+      "describesThisPage": true,
+      "summaries": [
+        {
+          "tier": "short",
+          "text": "The club said",
+          "words": 3,
+          "from": "inferred"
+        }
+      ],
+      "keep": [],
+      "highlights": [],
+      "derive": {
+        "mode": "anchor",
+        "translate": true,
+        "combine": true
+      },
+      "preference": "summary",
+      "lang": "en"
+    },
+    "errors": [],
+    "warnings": [
+      "obs:summary: the value is cut short at a double quote; write a double quote inside a value as &quot; (§9)"
+    ],
+    "fingerprint": "b3d47f75e30a0a97"
   },
   "unknown-and-reserved.html": {
     "brief": {
       "version": 1,
       "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "obs",
       "describesThisPage": true,
       "summaries": [
         {
@@ -921,12 +1252,14 @@
     "errors": [],
     "warnings": [
       "obs:mood is not an OBS v1 property and is ignored (§3.1)"
-    ]
+    ],
+    "fingerprint": "a6f65da1b607d7c0"
   },
   "url-other.html": {
     "brief": {
       "version": 1,
       "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "obs",
       "describesThisPage": false,
       "summaries": [
         {
@@ -948,12 +1281,14 @@
       "lang": "en"
     },
     "errors": [],
-    "warnings": []
+    "warnings": [],
+    "fingerprint": "9d08c119cb1d6deb"
   },
   "url-same.html": {
     "brief": {
       "version": 1,
       "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "obs",
       "describesThisPage": true,
       "summaries": [
         {
@@ -975,12 +1310,14 @@
       "lang": "en"
     },
     "errors": [],
-    "warnings": []
+    "warnings": [],
+    "fingerprint": "c53e89333913593c"
   },
   "valid-full.html": {
     "brief": {
       "version": 1,
       "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "obs",
       "describesThisPage": true,
       "summaries": [
         {
@@ -1032,12 +1369,14 @@
       "lang": "en-GB"
     },
     "errors": [],
-    "warnings": []
+    "warnings": [],
+    "fingerprint": "0e76bf63b357375d"
   },
   "valid-minimal.html": {
     "brief": {
       "version": 1,
       "modified": "2026-11-08T14:00:00Z",
+      "modifiedFrom": "obs",
       "describesThisPage": true,
       "summaries": [
         {
@@ -1058,6 +1397,7 @@
       "lang": "en"
     },
     "errors": [],
-    "warnings": []
+    "warnings": [],
+    "fingerprint": "a6f65da1b607d7c0"
   }
 }

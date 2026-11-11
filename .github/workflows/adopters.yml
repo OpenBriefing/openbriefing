@@ -1,0 +1,35 @@
+name: Adopters
+# Each listed publisher's example page is read once a week. If one no longer
+# carries usable tags, an issue is opened.
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: packages/openbriefing/package-lock.json
+      - run: npm ci && npm run build
+        working-directory: packages/openbriefing
+      - name: Check each publisher's example
+        id: check
+        run: node scripts/check-adopters.mjs > report.md
+        continue-on-error: true
+      - name: Open an issue when one fails
+        if: steps.check.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -z "$(gh issue list --label adopters-check --state open --json number --jq '.[0].number')" ]; then
+            gh label create adopters-check --color FBCA04 --description "The weekly adopters check failed" 2>/dev/null || true
+            gh issue create --title "An adopter's example page no longer carries usable tags" --label adopters-check --body-file report.md
+          fi

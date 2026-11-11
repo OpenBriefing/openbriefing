@@ -23,19 +23,18 @@ td:first-child{white-space:nowrap}footer{margin-top:3rem;color:var(--mute);font-
 <main>
 <h1>The <code>obs:</code> namespace</h1>
 <p class="lede">Namespace: <code>https://openbriefingstandard.org/ns#</code></p>
-<p>These are the tags of the <a href="/">Open Briefing Standard</a>, Draft 1.1. In a page they are <code>&lt;meta property="obs:…" content="…"&gt;</code> tags in the head. In a feed they are elements in this namespace. The <a href="https://github.com/OpenBriefing/openbriefing/blob/main/spec/v1.md">specification</a> is the authority; the tag names are not yet fixed.</p>
+<p>These are the tags of the <a href="/">Open Briefing Standard</a>, version 1 (release candidate). In a page they are <code>&lt;meta property="obs:…" content="…"&gt;</code> tags in the head. In a feed they are elements in this namespace. The <a href="https://github.com/OpenBriefing/openbriefing/blob/main/spec/v1.md">specification</a> is the authority; the tag names are frozen when version 1 is final.</p>
 <div class="wrap">
 <table>
 <thead><tr><th>Tag</th><th>Meaning</th><th>Required</th></tr></thead>
 <tbody>
-<tr><td><code>obs:modified</code></td><td>When any <code>obs:</code> tag on the page last changed, as an ISO 8601 date and time</td><td>yes</td></tr>
 <tr><td><code>obs:summary</code></td><td>The publisher's summary, of any length. Its tier comes from its length (§4).</td><td>yes, unless a tiered summary is present</td></tr>
 <tr><td><code>obs:summary:short</code></td><td>A summary written for the short tier</td><td>no</td></tr>
 <tr><td><code>obs:summary:medium</code></td><td>A summary written for the medium tier</td><td>no</td></tr>
 <tr><td><code>obs:summary:long</code></td><td>A summary written for the long tier</td><td>no</td></tr>
 <tr><td><code>obs:title</code></td><td>A title for cards and lists, 12 words or fewer</td><td>no</td></tr>
 <tr><td><code>obs:headline</code></td><td>One or two lines, 40 words or fewer, to tap or hear before going further</td><td>no</td></tr>
-<tr><td><code>obs:keep</code></td><td>A line of 40 words or fewer that every form must preserve. The first is the core message (§6).</td><td>no; up to 3</td></tr>
+<tr><td><code>obs:keep</code></td><td>A line of 40 words or fewer that the publisher intends every form to preserve. The first is the core message (§6).</td><td>no; up to 3</td></tr>
 <tr><td><code>obs:highlight</code></td><td>A passage of 60 words or fewer, taken word for word from the content, that may be quoted on its own (§7). Order is priority.</td><td>no; up to 5</td></tr>
 <tr><td><code>obs:highlight:label</code></td><td>A label of 6 words or fewer for the highlight it follows, such as "On control" (§7)</td><td>no</td></tr>
 <tr><td><code>obs:derive</code></td><td>What may be derived from the summary: <code>verbatim</code>, <code>anchor</code> or <code>open</code> (§5)</td><td>no; default <code>anchor</code></td></tr>
@@ -45,6 +44,7 @@ td:first-child{white-space:nowrap}footer{margin-top:3rem;color:var(--mute);font-
 <tr><td><code>obs:preference</code></td><td><code>summary</code> or <code>full</code> (§11)</td><td>no; default <code>summary</code></td></tr>
 <tr><td><code>obs:lang</code></td><td>The language of the <code>obs:</code> text, as a BCP 47 tag. Defaults to the page's <code>&lt;html lang&gt;</code>.</td><td>no</td></tr>
 <tr><td><code>obs:url</code></td><td>The canonical URL of the content the tags describe (§12)</td><td>no</td></tr>
+<tr><td><code>obs:modified</code></td><td>When any <code>obs:</code> tag on the page last changed, as an ISO 8601 date and time (§13)</td><td>no; recommended</td></tr>
 <tr><td><code>obs:version</code></td><td>The major version of OBS the tags follow</td><td>no; default <code>1</code></td></tr>
 </tbody>
 </table>

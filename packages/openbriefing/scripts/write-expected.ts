@@ -3,9 +3,9 @@
 // test/obs.test.ts are what make these results correct; this file records them.
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { FIXTURES, fixtureNames, readFixture } from "../test/helpers.js";
+import { expectedFor, FIXTURES, fixtureNames } from "../test/helpers.js";
 
 const expected: Record<string, unknown> = {};
-for (const name of fixtureNames()) expected[name] = readFixture(name);
+for (const name of fixtureNames()) expected[name] = expectedFor(name);
 writeFileSync(join(FIXTURES, "expected.json"), JSON.stringify(expected, null, 2) + "\n");
 console.log(`expected.json: ${Object.keys(expected).length} fixtures`);

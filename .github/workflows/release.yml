@@ -1,0 +1,51 @@
+name: Release
+# Pushing a v* tag tests, builds and publishes the package to npm through
+# trusted publishing (no token), then creates the GitHub release.
+on:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: write
+  id-token: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/openbriefing
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - name: npm with trusted publishing
+        run: npm install -g npm@^11.5.1 && npm --version
+      - name: The tag matches the package version
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match package version $version" >&2
+            exit 1
+          fi
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - name: Fixtures are up to date
+        run: |
+          npm run fixtures
+          npm run expected
+          git diff --exit-code -- ../../spec/fixtures
+      - run: npm publish --access public
+      - name: GitHub release from the changelog
+        working-directory: .
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          awk -v v="$version" '
+            /^## / { on = (index($0, "Package " v ",") > 0 || index($0, "Package " v " ") > 0) }
+            on && !/^## / { print }
+          ' CHANGELOG.md > notes.md
+          [ -s notes.md ] || echo "See CHANGELOG.md." > notes.md
+          gh release create "$GITHUB_REF_NAME" --title "openbriefing $version" --notes-file notes.md

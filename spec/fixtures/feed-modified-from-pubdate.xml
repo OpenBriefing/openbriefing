@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:obs="https://openbriefingstandard.org/ns#">
+  <channel>
+    <title>Garden Club Notes</title>
+    <link>https://example.test/</link>
+    <description>Synthetic fixture feed</description>
+    <item>
+      <title>Spring planting</title>
+      <link>https://example.test/spring-planting/</link>
+      <pubDate>Mon, 09 Nov 2026 08:15:00 GMT</pubDate>
+      <obs:summary>The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next meeting is set for the first week of the month. The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next meeting is set for the first week of the month. The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone.</obs:summary>
+    </item>
+    <item>
+      <title>Tools and compost</title>
+      <link>https://example.test/tools/</link>
+      <pubDate>Mon, 09 Nov 2026 08:15:00 GMT</pubDate>
+      <obs:modified>2026-11-08T14:00:00Z</obs:modified>
+      <obs:summary>The garden club met on Tuesday to plan the spring planting. Volunteers agreed to water the beds every second morning. Most of the seeds came from last year's harvest. The committee chose tomatoes, beans and three kinds of squash. A new fence will keep the rabbits away from the lettuce. Members who cannot dig offered to label the rows instead. The treasurer reported enough money for compost and tools. Children from the school will help on the first Saturday. Anyone may take vegetables home once the harvest begins. The next.</obs:summary>
+    </item>
+  </channel>
+</rss>

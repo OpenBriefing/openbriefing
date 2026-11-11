@@ -1,0 +1,37 @@
+name: List an adopter
+description: Add a site that publishes OBS tags, or a tool that reads them, to the adopters list
+labels: [adopter]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Name
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Address
+      placeholder: https://example.com
+    validations:
+      required: true
+  - type: dropdown
+    id: role
+    attributes:
+      label: Role
+      options:
+        - Publisher (the site carries obs: tags)
+        - Consumer (the tool reads obs: tags)
+    validations:
+      required: true
+  - type: input
+    id: example
+    attributes:
+      label: For a publisher, one page that carries the tags
+      placeholder: https://example.com/a-post/
+  - type: textarea
+    id: note
+    attributes:
+      label: One line about it
+    validations:
+      required: true

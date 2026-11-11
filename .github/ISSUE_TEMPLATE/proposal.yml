@@ -1,0 +1,36 @@
+name: Propose a change
+description: A new tag, a change to the spec's text, or a change to the checker
+labels: [proposal]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What can a publisher or a tool not do today? A real page or product helps.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: The proposed tag or text
+      description: The tag's name, its values and one example, or the wording you would change.
+    validations:
+      required: true
+  - type: textarea
+    id: who
+    attributes:
+      label: Who needs it
+      description: Which publishers would write it, and which tools would read it?
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind of change
+      options:
+        - A new optional tag (a minor version)
+        - A change to an existing tag's meaning (a new major version)
+        - Wording only
+        - The checker or the parser
+    validations:
+      required: true

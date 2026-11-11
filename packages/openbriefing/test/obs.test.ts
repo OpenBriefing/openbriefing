@@ -2,8 +2,9 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { JSDOM } from "jsdom";
-import { looseText, mergeObs, normalizeUrl, parseFeedObs, parseObs, tierFor, validateObs, type ParseResult } from "../src/obs.js";
-import { FIXTURES, fixtureNames, parsePage, readFixture } from "./helpers.js";
+import { createHash } from "node:crypto";
+import { fingerprint, looseText, mergeObs, normalizeUrl, parseFeedObs, parseObs, tierFor, validateObs, type ParseResult } from "../src/obs.js";
+import { expectedFor, FIXTURES, fixtureNames, parsePage, readFixture } from "./helpers.js";
 
 const page = (name: string) => readFixture(`${name}.html`) as ParseResult;
 const tiers = (r: ParseResult) => r.brief?.summaries.map((s) => `${s.tier}:${s.words}:${s.from}`);
@@ -18,6 +19,7 @@ describe("pages", () => {
     expect(r.brief).toMatchObject({
       version: 1,
       modified: "2026-11-08T14:00:00Z",
+      modifiedFrom: "obs",
       describesThisPage: true,
       keep: [],
       derive: { mode: "anchor", translate: true, combine: true },
@@ -65,15 +67,38 @@ describe("pages", () => {
     expect(has(r.warnings, "set aside")).toBe(true);
   });
 
-  it("missing-modified, bad-modified and missing-summary are unusable", () => {
-    for (const name of ["missing-modified", "bad-modified", "missing-summary"]) {
-      const r = page(name);
-      expect(r.brief, name).toBeUndefined();
-      expect(r.errors.length, name).toBeGreaterThan(0);
-    }
-    expect(has(page("missing-modified").errors, "obs:modified is missing")).toBe(true);
-    expect(has(page("bad-modified").errors, "not an ISO 8601")).toBe(true);
-    expect(has(page("missing-summary").errors, "No summary")).toBe(true);
+  it("missing-summary is unusable", () => {
+    const r = page("missing-summary");
+    expect(r.brief).toBeUndefined();
+    expect(has(r.errors, "No summary")).toBe(true);
+  });
+
+  it("missing-modified: one tag is usable, with no modified time", () => {
+    const r = page("missing-modified");
+    expect(r.errors).toEqual([]);
+    expect(r.warnings).toEqual([]);
+    expect(r.brief?.modified).toBeUndefined();
+    expect(r.brief?.modifiedFrom).toBe("none");
+    expect("modified" in r.brief!).toBe(false);
+  });
+
+  it("the effective modified time: obs, then article, then none", () => {
+    expect(page("modified-from-article").brief).toMatchObject({ modified: "2026-11-07T09:00:00.000Z", modifiedFrom: "article" });
+    expect(page("modified-from-article").warnings).toEqual([]);
+    expect(page("modified-obs-over-article").brief).toMatchObject({ modified: "2026-11-08T14:00:00Z", modifiedFrom: "obs" });
+    const bad = page("bad-modified");
+    expect(bad.errors).toEqual([]);
+    expect(bad.brief?.modifiedFrom).toBe("none");
+    expect(has(bad.warnings, "not an ISO 8601")).toBe(true);
+    const fell = page("modified-bad-then-article");
+    expect(fell.brief).toMatchObject({ modified: "2026-11-07T09:00:00.000Z", modifiedFrom: "article" });
+    expect(has(fell.warnings, "not an ISO 8601")).toBe(true);
+  });
+
+  it("unescaped-quote: the cut value is read, with a warning that names &quot;", () => {
+    const r = page("unescaped-quote");
+    expect(r.brief?.summaries[0]?.text).toBe("The club said");
+    expect(has(r.warnings, "&quot;")).toBe(true);
   });
 
   it("url-other describes the original; url-same describes this page", () => {
@@ -250,12 +275,27 @@ describe("feeds", () => {
     expect(has(entry!.warnings, 'length="huge"')).toBe(true);
   });
 
+  it("a feed item's own date is its modified time when obs:modified is absent", () => {
+    const [a, b] = readFixture("feed-modified-from-updated.xml") as ParseResult[];
+    expect(a?.brief).toMatchObject({ modified: "2026-11-09T08:15:00Z", modifiedFrom: "feed" });
+    expect(b?.errors).toEqual([]);
+    expect(b?.brief?.modifiedFrom).toBe("none");
+    const [c, d] = readFixture("feed-modified-from-pubdate.xml") as ParseResult[];
+    expect(c?.brief).toMatchObject({ modified: "2026-11-09T08:15:00.000Z", modifiedFrom: "feed" });
+    expect(d?.brief).toMatchObject({ modified: "2026-11-08T14:00:00Z", modifiedFrom: "obs" });
+  });
+
   it("feed-vs-page: the later modified stands; a tie goes to the page", () => {
     const pageBrief = page("feed-vs-page").brief!;
     const [feedBrief] = (readFixture("feed-rss.xml") as ParseResult[]).map((r) => r.brief!);
     expect(mergeObs(pageBrief, feedBrief)).toBe(feedBrief); // feed 14:00 is later than page 10:00
     const tied = { ...feedBrief!, modified: pageBrief.modified };
     expect(mergeObs(pageBrief, tied)).toBe(pageBrief);
+    // Either side with no modified time: the page stands.
+    const undated = page("missing-modified").brief!;
+    expect(mergeObs(undated, feedBrief)).toBe(undated);
+    const { modified: _dropped, ...feedUndated } = { ...feedBrief!, modifiedFrom: "none" as const };
+    expect(mergeObs(pageBrief, feedUndated)).toBe(pageBrief);
     expect(mergeObs(undefined, feedBrief)).toBe(feedBrief);
     expect(mergeObs(pageBrief, undefined)).toBe(pageBrief);
   });
@@ -283,10 +323,91 @@ describe("validateObs", () => {
     expect(r.warnings).toEqual(["A highlight has no text; it is ignored"]);
   });
 
+  it("accepts an object with no modified time, and carries a modified time's source", () => {
+    const none = validateObs({ summaries: [{ text: "A summary." }] });
+    expect(none.errors).toEqual([]);
+    expect(none.brief?.modifiedFrom).toBe("none");
+    // A stored row from before modifiedFrom existed: its time came from obs:modified.
+    expect(validateObs({ modified: "2026-11-08T14:00:00Z", summaries: [{ text: "A summary." }] }).brief?.modifiedFrom).toBe("obs");
+    const article = page("modified-from-article").brief!;
+    expect(validateObs(JSON.parse(JSON.stringify(article))).brief).toEqual(article);
+    const [feed] = (readFixture("feed-modified-from-updated.xml") as ParseResult[]).map((r) => r.brief!);
+    expect(validateObs(JSON.parse(JSON.stringify(feed))).brief).toEqual(feed);
+  });
+
   it("rejects non-objects and empty objects", () => {
     expect(validateObs(null).brief).toBeUndefined();
     expect(validateObs([]).brief).toBeUndefined();
     expect(validateObs({}).errors.length).toBeGreaterThan(0);
+  });
+});
+
+describe("fingerprint", () => {
+  const full = () => page("valid-full").brief!;
+
+  it("is 16 hex characters of SHA-256 over the canonical JSON", () => {
+    const b = full();
+    const canonical = JSON.stringify([
+      "obs1", b.version, b.url ?? null, b.title ?? null, b.headline ?? null,
+      b.summaries.map((s) => [s.tier, s.text]), b.keep, b.highlights.map((h) => [h.text, h.label ?? null]),
+      [b.derive.mode, b.derive.translate, b.derive.combine], b.attribution ?? null, b.preference,
+    ]);
+    expect(fingerprint(b)).toBe(createHash("sha256").update(canonical, "utf8").digest("hex").slice(0, 16));
+    expect(fingerprint(b)).toMatch(/^[0-9a-f]{16}$/u);
+  });
+
+  it("agrees with node's SHA-256 on text of every length and script", () => {
+    for (const text of ["", "a", "x".repeat(55), "x".repeat(56), "x".repeat(64), "x".repeat(1000), "naïve café — “quoted” 日本語 🌱"]) {
+      const b = { ...full(), title: text };
+      const canonical = JSON.stringify([
+        "obs1", b.version, b.url ?? null, b.title, b.headline ?? null,
+        b.summaries.map((s) => [s.tier, s.text]), b.keep, b.highlights.map((h) => [h.text, h.label ?? null]),
+        [b.derive.mode, b.derive.translate, b.derive.combine], b.attribution ?? null, b.preference,
+      ]);
+      expect(fingerprint(b), text.slice(0, 12)).toBe(createHash("sha256").update(canonical, "utf8").digest("hex").slice(0, 16));
+    }
+  });
+
+  it("ignores the modified time, key order and where the tags were read", () => {
+    const b = full();
+    const { modified: _m, ...rest } = b;
+    expect(fingerprint({ ...rest, modifiedFrom: "none" })).toBe(fingerprint(b));
+    expect(fingerprint({ ...b, modified: "2030-01-01T00:00:00Z" })).toBe(fingerprint(b));
+    expect(fingerprint(Object.fromEntries(Object.entries(b).reverse()) as typeof b)).toBe(fingerprint(b));
+    expect(fingerprint({ ...b, lang: "fr", describesThisPage: false })).toBe(fingerprint(b));
+    expect(fingerprint({ ...b, highlights: b.highlights.map((h) => ({ ...h, inContent: false })) })).toBe(fingerprint(b));
+  });
+
+  it("changes with any text or setting", () => {
+    const b = full();
+    const base = fingerprint(b);
+    const changed = [
+      { ...b, title: `${b.title} again` },
+      { ...b, headline: "Another headline." },
+      { ...b, summaries: b.summaries.map((s, i) => (i === 0 ? { ...s, text: `${s.text} More.` } : s)) },
+      { ...b, summaries: b.summaries.slice(1) },
+      { ...b, keep: [...b.keep].reverse() },
+      { ...b, keep: [] },
+      { ...b, highlights: b.highlights.slice(1) },
+      { ...b, highlights: b.highlights.map((h) => ({ ...h, label: "Other" })) },
+      { ...b, derive: { ...b.derive, mode: "verbatim" as const } },
+      { ...b, derive: { ...b.derive, translate: !b.derive.translate } },
+      { ...b, derive: { ...b.derive, combine: !b.derive.combine } },
+      { ...b, attribution: "From somewhere else" },
+      { ...b, preference: "full" as const },
+      { ...b, url: "https://example.test/elsewhere" },
+      { ...b, version: 2 },
+    ];
+    const prints = changed.map(fingerprint);
+    for (const p of prints) expect(p).not.toBe(base);
+    expect(new Set(prints).size).toBe(prints.length);
+  });
+
+  it("a page and its feed item with the same tags agree", () => {
+    const html = '<html lang="en"><head><link rel="canonical" href="https://example.test/p/"><meta property="obs:summary" content="A summary."><meta property="obs:keep" content="Keep this."></head><body><p>Text.</p></body></html>';
+    const xml = '<rss version="2.0" xmlns:obs="https://openbriefingstandard.org/ns#"><channel><item><link>https://example.test/p/</link><obs:summary>A summary.</obs:summary><obs:keep>Keep this.</obs:keep></item></channel></rss>';
+    const item = new JSDOM(xml, { contentType: "text/xml" }).window.document.getElementsByTagName("item")[0]!;
+    expect(fingerprint(parseFeedObs(item).brief!)).toBe(fingerprint(parsePage(html, "https://example.test/p/").brief!));
   });
 });
 
@@ -354,10 +475,20 @@ describe("spec examples", () => {
     expect(r.brief?.highlights.map((h) => h.label)).toEqual(["On listening", undefined]);
   });
 
-  it("the quick start's two tags parse with no errors", () => {
+  it("the quick start's one tag parses with no errors", () => {
     const quick = blocks.find((b) => b.code.includes('obs:summary" content="Your summary'))!;
+    expect(quick.code.match(/<meta /gu)).toHaveLength(1);
     const r = parsePage(`<html><head>${quick.code}</head></html>`, "https://example.com/x/");
     expect(r.errors).toEqual([]);
+    expect(r.warnings).toEqual([]);
+  });
+
+  it("§1 to §16 ask nothing of a tool: no must, shall or required", () => {
+    const normative = spec.slice(spec.indexOf("## 1. Purpose"), spec.indexOf("## 17. Example"));
+    const lines = normative.split("\n").filter((l) => /\b(must|shall|required)\b/iu.test(l));
+    // The words may describe what a publisher's tag is, or say what OBS does not require.
+    const allowed = [/never required/u, /does not require/u, /\| Required \|/u, /every version must get across/u];
+    expect(lines.filter((l) => !allowed.some((re) => re.test(l)))).toEqual([]);
   });
 
   it("the feed example parses with no errors", () => {
@@ -377,7 +508,7 @@ describe("expected.json", () => {
     const expected = JSON.parse(readFileSync(join(FIXTURES, "expected.json"), "utf8")) as Record<string, unknown>;
     expect(Object.keys(expected).sort()).toEqual(fixtureNames());
     for (const name of fixtureNames()) {
-      expect(JSON.parse(JSON.stringify(readFixture(name))), name).toEqual(expected[name]);
+      expect(JSON.parse(JSON.stringify(expectedFor(name))), name).toEqual(expected[name]);
     }
   });
 });

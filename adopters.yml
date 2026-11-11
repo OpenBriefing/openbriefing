@@ -1,0 +1,16 @@
+# Who uses the Open Briefing Standard.
+# To be listed, open an issue with the "List an adopter" template or send a pull request.
+# For a publisher, `example` is one page that carries the tags; a weekly check reads it.
+
+publishers:
+  - name: Rishi Dean
+    url: https://rishidean.com
+    example: https://rishidean.com/disruptive-tech-evolution-ai/
+    since: 2026-11-10
+    note: A personal blog on technology and product. The first posts carry a headline, a summary, keep lines and highlights.
+
+consumers:
+  - name: ikku
+    url: https://ikku.ai
+    since: 2026-11-09
+    note: A daily audio briefing. Reads the tags from pages and feeds, and plays the author's summary with their credit.
