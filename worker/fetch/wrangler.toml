@@ -1,0 +1,25 @@
+# The checker's fetch helper. GitHub Pages serves the site and runs no code,
+# and a browser cannot read another site's page, so this Worker does the one
+# fetch. It stores nothing and logs no address.
+name = "openbriefing-fetch"
+main = "src/index.ts"
+compatibility_date = "2026-10-01"
+workers_dev = false
+routes = [{ pattern = "fetch.openbriefingstandard.org", custom_domain = true }]
+
+[observability]
+enabled = false
+
+[vars]
+# Origins whose pages may call this Worker, comma separated.
+ALLOWED_ORIGINS = "https://openbriefingstandard.org"
+USER_AGENT = "openbriefing-check/site (+https://openbriefingstandard.org)"
+
+# 20 requests a minute for each address.
+[[ratelimits]]
+name = "LIMITER"
+namespace_id = "2611"
+
+  [ratelimits.simple]
+  limit = 20
+  period = 60

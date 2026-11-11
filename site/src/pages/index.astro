@@ -1,0 +1,171 @@
+---
+import Base from "../layouts/Base.astro";
+import "../styles/card.css";
+
+const additions = [
+  { tag: "obs:headline", what: "One or two lines a reader can tap, or a listener hear, before going further." },
+  { tag: "obs:keep", what: "A sentence every version should get across, however short it is cut. Up to three." },
+  { tag: "obs:attribution", what: "How you want to be credited, in text or aloud." },
+  { tag: "obs:title", what: "A short title for cards and lists." },
+  { tag: "obs:highlight", what: "A passage from the piece, word for word, that may be quoted on its own. Up to five." },
+];
+const modes = [
+  { value: "verbatim", what: "Use my words as written. Make nothing else from them." },
+  { value: "anchor", what: "Shorter versions and translations may be made from my summary, and nothing longer. This is the default." },
+  { value: "open", what: "Longer versions may also be written from the piece, with my summary as their backbone." },
+];
+---
+
+<Base
+  title="Open Briefing Standard"
+  description="A few meta tags that hand software your own summary of your writing, and say how it may be used."
+  path="/"
+>
+  <section class="hero">
+    <h1>Write the summary yourself.</h1>
+    <p class="lede">
+      Assistants, readers and briefing apps summarize your writing whether you had a say or not. The Open Briefing Standard
+      is a few meta tags that hand them your own summary, and say how it may be used.
+    </p>
+    <form class="check-form" action="/check" method="get">
+      <label for="url">Does your page carry the tags? Check it.</label>
+      <div class="field">
+        <input id="url" name="url" type="url" inputmode="url" placeholder="https://example.com/a-post/" required />
+        <button type="submit">Check this page</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="pair" aria-labelledby="pair-h">
+    <h2 id="pair-h" class="visually-hidden">What you write, and what a reader sees</h2>
+    <div class="pair-side">
+      <p class="pair-label">You add this to the page</p>
+      <pre><code>&lt;meta property="<mark>obs:summary</mark>" content="Software
+  reads posts on people's behalf and writes its own
+  version of each one. The author never sees that
+  version. This post argues for a simple fix: ask the
+  author first."&gt;
+&lt;meta property="<mark>obs:headline</mark>" content="Software
+  summarizes posts without asking the people who
+  wrote them. It should ask."&gt;
+&lt;meta property="<mark>obs:highlight</mark>" content="A summary
+  the author approved can be used as it is."&gt;
+&lt;meta property="<mark>obs:attribution</mark>" content="From
+  Example Blog"&gt;</code></pre>
+    </div>
+    <div class="pair-side">
+      <p class="pair-label">A tool that reads it can show this</p>
+      <article class="brief-card">
+        <p class="card-title">Ask the author first</p>
+        <p class="card-headline">Software summarizes posts without asking the people who wrote them. It should ask.</p>
+        <p class="card-summary">
+          Software reads posts on people's behalf and writes its own version of each one. The author never sees that
+          version. This post argues for a simple fix: ask the author first.
+        </p>
+        <blockquote class="card-quote"><span class="marked">A summary the author approved can be used as it is.</span></blockquote>
+        <p class="card-credit"><span>From Example Blog, in the author's words</span></p>
+      </article>
+    </div>
+  </section>
+
+  <div class="prose">
+    <h2 id="start">Start with one tag</h2>
+    <p>Put your summary in the page's <code>&lt;head&gt;</code>. That is the whole of adopting the standard.</p>
+    <pre class="wrap"><code>&lt;meta property="obs:summary" content="Your summary of this page, in plain text."&gt;</code></pre>
+    <p>
+      Around 200 to 350 words serves the most uses: it is about two minutes read aloud, and a tool can cut shorter
+      versions from it. Write it as plain text that works both read and heard.
+    </p>
+
+    <h2 id="more">Five additions that help most</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Tag</th><th>What it gives a reader</th></tr></thead>
+        <tbody>
+          {additions.map((a) => <tr><td><code>{a.tag}</code></td><td>{a.what}</td></tr>)}
+        </tbody>
+      </table>
+    </div>
+    <p>Every tag, with its size and default, is on the <a href="/ns">tags page</a>. The same tags can ride in an RSS or Atom feed.</p>
+
+    <h2 id="control">You say how far a tool may go</h2>
+    <p>One tag, <code>obs:derive</code>, sets the limit on what may be made from your summary.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Value</th><th>What you are saying</th></tr></thead>
+        <tbody>
+          {modes.map((m) => <tr><td><code>{m.value}</code></td><td>{m.what}</td></tr>)}
+        </tbody>
+      </table>
+    </div>
+
+    <h2 id="what">What it is, and is not</h2>
+    <ul>
+      <li>It is a format, in the spirit of OpenGraph. Each tag states what you intend. It asks nothing of the tools that read it, and it cannot force them.</li>
+      <li>It does not say whether your writing may be used at all. robots.txt and similar signals do that, and the standard leaves them alone.</li>
+      <li>It is free to use. The specification is in the public domain, and the tag names are frozen once version 1 is final.</li>
+    </ul>
+
+    <h2 id="tools">Check from the command line</h2>
+    <p>The checker also runs on your machine or in your site's build, against one page, a feed or every page in a sitemap.</p>
+    <pre><code>npx openbriefing check https://example.com/a-post/
+npx openbriefing check https://example.com/sitemap.xml --sitemap</code></pre>
+    <p>
+      Building a tool that reads the tags? The{" "}<a href="https://github.com/OpenBriefing/openbriefing/tree/main/packages/openbriefing">reference parser</a>{" "}has
+      no dependencies, and the{" "}<a href="https://github.com/OpenBriefing/openbriefing/tree/main/spec/fixtures">test fixtures</a>{" "}come
+      with the expected result for each, so a parser in any language can test itself.
+    </p>
+
+    <h2 id="read">Read on</h2>
+    <ul>
+      <li><a href="/spec/v1">The specification</a>, about a ten-minute read</li>
+      <li><a href="/ns">Every tag</a> on one page</li>
+      <li><a href="/examples/">Three example pages</a> to point a tool at</li>
+      <li><a href="/adopters">Who publishes the tags and who reads them</a></li>
+    </ul>
+  </div>
+</Base>
+
+<style>
+  .hero > * + * {
+    margin-top: 1.4rem;
+  }
+  .hero h1 {
+    max-width: 11ch;
+  }
+  .check-form {
+    margin-top: 2.2rem;
+    max-width: 38rem;
+  }
+  .check-form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.55rem;
+  }
+  .pair {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+    margin: clamp(3rem, 8vw, 5.5rem) 0 clamp(2.5rem, 6vw, 4rem);
+    align-items: start;
+  }
+  @media (min-width: 56rem) {
+    .pair {
+      grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
+      gap: 3rem;
+    }
+  }
+  .pair-label {
+    font-weight: 600;
+    margin-bottom: 0.7rem;
+  }
+  .pair pre {
+    font-size: 0.82rem;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .pair mark {
+    padding-inline: 0.12em;
+    margin-inline: 0;
+  }
+</style>

@@ -1,0 +1,32 @@
+{
+  "name": "openbriefingstandard-site",
+  "private": true,
+  "type": "module",
+  "description": "openbriefingstandard.org: the spec, the namespace, the checker.",
+  "scripts": {
+    "prebuild": "node scripts/copy-examples.mjs",
+    "predev": "node scripts/copy-examples.mjs",
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "tsc --noEmit",
+    "test": "vitest run",
+    "e2e": "playwright test"
+  },
+  "dependencies": {
+    "@fontsource-variable/atkinson-hyperlegible-mono": "^5.3.0",
+    "@fontsource-variable/atkinson-hyperlegible-next": "^5.3.0",
+    "@fontsource-variable/bricolage-grotesque": "^5.3.0",
+    "astro": "^7.4.10",
+    "marked": "^15.0.0",
+    "yaml": "^2.6.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.50.0",
+    "@types/jsdom": "^21.1.7",
+    "@types/node": "^22.15.0",
+    "jsdom": "^26.1.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.1.0"
+  }
+}

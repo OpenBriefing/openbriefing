@@ -1,0 +1,68 @@
+---
+import Base from "../layouts/Base.astro";
+import { host, readAdopters } from "../lib/adopters";
+
+const { publishers, consumers } = readAdopters();
+const ISSUE = "https://github.com/OpenBriefing/openbriefing/issues/new?template=adopter.yml";
+---
+
+<Base title="Who uses it" description="Sites that publish Open Briefing Standard tags, and tools that read them." path="/adopters">
+  <div class="prose">
+    <h1>Who uses it</h1>
+    <p class="lede">A format is worth adopting when someone writes it and someone reads it. These do.</p>
+
+    <h2>Publishers</h2>
+    <p>Sites whose pages carry the tags. Each is checked once a week.</p>
+    <ul class="adopters">
+      {publishers.map((p) => (
+        <li>
+          <a class="adopter-name" href={p.url}>{p.name}</a> <span class="note">{host(p.url)}</span>
+          {p.note && <p>{p.note}</p>}
+          {p.example && <p class="note"><a href={`/check?url=${encodeURIComponent(p.example)}`}>Check one of its pages</a></p>}
+        </li>
+      ))}
+    </ul>
+
+    <h2>Tools that read the tags</h2>
+    <ul class="adopters">
+      {consumers.map((c) => (
+        <li>
+          <a class="adopter-name" href={c.url}>{c.name}</a> <span class="note">{host(c.url)}</span>
+          {c.note && <p>{c.note}</p>}
+        </li>
+      ))}
+    </ul>
+
+    <h2>Add yours</h2>
+    <p>
+      If your site publishes the tags or your tool reads them,{" "}<a href={ISSUE}>open an issue</a>{" "}with its name and address,
+      or send a pull request that edits <code>adopters.yml</code>. Listing is free and needs no approval beyond a working page.
+    </p>
+  </div>
+</Base>
+
+<style>
+  h1 {
+    font-size: clamp(2.2rem, 1.4rem + 3.4vw, 3.6rem);
+  }
+  .adopters {
+    list-style: none;
+    padding-left: 0;
+  }
+  .adopters li {
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .adopters li + li {
+    margin-top: 0;
+  }
+  .adopters p {
+    margin-top: 0.3rem;
+  }
+  .adopter-name {
+    font-family: var(--display);
+    font-weight: 650;
+    font-size: 1.2rem;
+    letter-spacing: -0.01em;
+  }
+</style>
