@@ -57,6 +57,8 @@ jobs:
       - run: npm run check
       - run: npm test
       - run: npm run build
-      - run: npx playwright install --with-deps chromium
+      # The runner image already has Chromium's system libraries; --with-deps
+      # only adds fonts through apt, and fails the job when Ubuntu's mirrors do.
+      - run: npx playwright install chromium
       - run: npx playwright test
 

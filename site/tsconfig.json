@@ -1,6 +1,6 @@
 {
   "extends": "astro/tsconfigs/strict",
-  "compilerOptions": { "noUncheckedIndexedAccess": true, "types": ["node"] },
+  "compilerOptions": { "noUncheckedIndexedAccess": true, "types": ["node"], "paths": { "yaml": ["./node_modules/yaml"] } },
   "include": ["src", "test", "e2e", ".astro/types.d.ts"],
   "exclude": ["dist"]
 }

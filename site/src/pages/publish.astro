@@ -1,0 +1,135 @@
+---
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import Base from "../layouts/Base.astro";
+import { ROOT } from "../lib/spec";
+
+const prompt = readFileSync(join(ROOT, "kit", "prompt.md"), "utf8").trim();
+const REPO = "https://github.com/OpenBriefing/openbriefing";
+---
+
+<Base title="Add your tags" description="Draft your summary with the assistant you already use, review it, and put Open Briefing Standard tags on your site: Ghost, a static site, plain HTML or a feed." path="/publish">
+  <div class="prose">
+    <h1>Add your tags</h1>
+    <p class="lede">Draft with the assistant you already use, read every line, and paste. A first post takes a few minutes.</p>
+
+    <h2 id="draft">1. Draft</h2>
+    <p>
+      Copy this prompt into your assistant, then paste your post after it. It returns a briefing file: a headline, a
+      summary of 200 to 350 words, the lines to keep and a few passages worth quoting.
+    </p>
+    <details class="prompt">
+      <summary>Read the prompt</summary>
+      <pre class="wrap"><code id="prompt-text">{prompt}</code></pre>
+    </details>
+    <p><button type="button" id="prompt-copy">Copy the prompt</button></p>
+    <p class="note">
+      The prompt is in the public domain. Change it to suit your voice. If your assistant loads skills, the same
+      instructions are packaged as{" "}<a href={`${REPO}/tree/main/kit/skill`}>a skill</a>.
+    </p>
+
+    <h2 id="review">2. Read it, then build</h2>
+    <p>
+      Paste the draft into{" "}<a href="/build">the tag builder</a>. It checks the lengths, looks each highlight up in your post,
+      shows the card a tool could make and reads the summary aloud.
+    </p>
+    <p>
+      Then read every line as if someone were quoting you, because they will be. A tool presents these words as yours, and
+      a summary cannot be recalled once it has been used. What to look for:
+    </p>
+    <ul>
+      <li>The first two sentences stand on their own. A tool that needs something shorter often uses just those.</li>
+      <li>It says what the post says: no added background, no conclusion you did not draw.</li>
+      <li>It reads well aloud: no "see below", no web addresses, abbreviations spelled out once.</li>
+      <li>Each highlight is a passage you would be glad to see quoted alone, copied word for word.</li>
+    </ul>
+    <p>When it says what you mean, mark it approved and copy the tags.</p>
+
+    <h2 id="place">3. Put the tags on your site</h2>
+
+    <h3 id="ghost">Ghost</h3>
+    <p>
+      Open the post, then its settings, then <strong>Code injection</strong>. Paste the builder's Ghost output into the
+      post header box and update the post. Nothing else about the post changes.
+    </p>
+    <p>For a whole catalogue, the command line keeps one briefing file per post and writes the approved ones for you:</p>
+    <pre><code>export GHOST_URL=https://your-site.example
+export GHOST_ADMIN_API_KEY=…
+
+npx openbriefing ghost pull posts/
+npx openbriefing ghost push posts/ --dry-run
+npx openbriefing ghost push posts/</code></pre>
+    <p>The key is a custom integration's Admin API key: in Ghost Admin, open Integrations and add a custom integration.</p>
+    <p>
+      <code>pull</code> writes each post's text with an empty draft above it, for you or your assistant to fill in. It
+      never changes Ghost and never overwrites a file. <code>push</code> writes only files marked{" "}<code>status: approved</code>, only between its two marker comments in the post header, and skips a post whose
+      tags have not changed. Keep the folder out of any public repository: it holds your posts.
+    </p>
+
+    <h3 id="static">A static site</h3>
+    <p>
+      Put the builder's front matter output in the post, under an <code>obs:</code> key, and have your head template write
+      one tag per key. Or write the tags at build time from the same file:
+    </p>
+    <pre><code>npx openbriefing tags content/a-post.md</code></pre>
+    <p>
+      The command reads the <code>obs:</code> key from a post's front matter, checks each highlight against the post's
+      text, and exits with an error for a draft, so a build cannot publish one by accident.
+    </p>
+
+    <h3 id="html">Any page you can edit</h3>
+    <p>Paste the builder's HTML output inside the page's <code>&lt;head&gt;</code>.</p>
+
+    <h3 id="feeds">Your feed</h3>
+    <p>
+      The same tags can ride in an RSS or Atom feed, so a feed reader can use them without fetching each page. Each tag
+      becomes an element, and a sub-property becomes an attribute: <code>obs:summary:short</code> is{" "}<code>&lt;obs:summary length="short"&gt;</code>. The builder's feed output, or{" "}<code>openbriefing tags --format feed</code>, writes them. <a href="/spec/v1#14-feeds">Section 14 of the spec</a>{" "}has
+      the rules.
+    </p>
+
+    <h3 id="hosted">Where it cannot be done yet</h3>
+    <p>
+      A platform that gives you no way to add tags to a page's head, such as Substack, Medium or LinkedIn, cannot carry
+      them. WordPress will get a plugin.
+    </p>
+
+    <h2 id="check">4. Check the live page</h2>
+    <p>
+      <a href="/check">Check the page</a>{" "}once it is published, or check everything at once:
+    </p>
+    <pre><code>npx openbriefing check https://your-site.example/sitemap.xml --sitemap</code></pre>
+    <p>
+      Then, if you like, <a href="/adopters">add your site to the list</a>.
+    </p>
+  </div>
+</Base>
+
+<script>
+  const button = document.getElementById("prompt-copy") as HTMLButtonElement;
+  const text = document.getElementById("prompt-text")!;
+  button.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(text.textContent ?? "");
+      button.textContent = "Copied";
+    } catch {
+      (text.closest("details") as HTMLDetailsElement).open = true;
+      button.textContent = "Select the text above and copy it";
+    }
+    setTimeout(() => (button.textContent = "Copy the prompt"), 2500);
+  });
+</script>
+
+<style>
+  h1 {
+    font-size: clamp(2.2rem, 1.4rem + 3.4vw, 3.6rem);
+  }
+  .prompt > summary {
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .prompt pre {
+    margin-top: 0.8rem;
+    max-height: 28rem;
+    overflow-y: auto;
+  }
+</style>

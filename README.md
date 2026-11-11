@@ -29,6 +29,14 @@ npx openbriefing check https://example.com/sitemap.xml --sitemap
 
 The reference parser and checker are in [packages/openbriefing](packages/openbriefing), and the test fixtures, with the expected result for each, are in [spec/fixtures](spec/fixtures). Any implementation can test itself against them.
 
+## Add your tags
+
+[openbriefingstandard.org/publish](https://openbriefingstandard.org/publish) walks through it. The pieces are in this repository:
+
+- [`kit/prompt.md`](kit/prompt.md): a prompt that has your assistant draft the summary as a briefing file. [`kit/skill/`](kit/skill/SKILL.md) is the same as a skill.
+- [The tag builder](https://openbriefingstandard.org/build) and `npx openbriefing tags`: check a briefing file and write the tags.
+- `npx openbriefing ghost pull` and `ghost push`: keep one briefing file per Ghost post and write the approved ones.
+
 ## Who uses it
 
 Publishers and tools are listed in [adopters.yml](adopters.yml). To add yours, open an issue with the "List an adopter" template.

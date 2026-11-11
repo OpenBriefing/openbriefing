@@ -1,0 +1,180 @@
+---
+import Base from "../layouts/Base.astro";
+import "../styles/card.css";
+import "../styles/result.css";
+---
+
+<Base title="Build your tags" description="Paste a briefing file, see it checked as you type, and copy Open Briefing Standard tags for your site, your CMS or your feed." path="/build">
+  <div class="prose intro">
+    <h1>Build your tags</h1>
+    <p class="lede">Paste a briefing file. It is checked as you type, and the tags come out escaped and ready for your site.</p>
+  </div>
+
+  <form id="build-form" class="builder" novalidate>
+    <label for="build-file">Your briefing file</label>
+    <textarea id="build-file" name="file" spellcheck="true" rows="16" placeholder="summary: |&#10;  Your summary of the post, in plain text.&#10;headline: One or two lines to hear before going further.&#10;status: draft"></textarea>
+    <p class="note">
+      Nothing you type leaves this page. No file yet?{" "}<button type="button" class="linkish" id="build-example">Start from an example</button>,{" "}or{" "}<a href="/publish#draft">have your assistant draft one</a>.
+    </p>
+
+    <details class="paste">
+      <summary>Check the highlights against your post</summary>
+      <p class="note">A highlight is a passage copied from the post, word for word. Paste the post's text and each one is looked up in it.</p>
+      <label for="build-post" class="visually-hidden">The post's text</label>
+      <textarea id="build-post" name="post" spellcheck="false" placeholder="The post's text"></textarea>
+      <p>
+        <button type="button" class="quiet" id="build-fetch">Read it from the post's address</button>
+      </p>
+      <p class="note">This reads the address in the file's <code>url:</code> line through the same helper the checker uses. Only the address is sent.</p>
+    </details>
+    <p id="build-status" class="visually-hidden" role="status" aria-live="polite"></p>
+  </form>
+
+  <div id="build-result" class="result"></div>
+
+  <section id="build-output" class="output" hidden>
+    <h2>Your tags</h2>
+    <p id="build-draft" class="draft-note" hidden>
+      This is a draft, and the tags say so. Once you have read every line and it says what you mean:{" "}<button type="button" class="linkish" id="build-approve">mark it approved</button>.
+    </p>
+    <div class="tabs" role="tablist" aria-label="Where the tags are going"></div>
+    <div id="build-panel" role="tabpanel" tabindex="0">
+      <p id="build-note" class="note"></p>
+      <pre><code id="build-code"></code></pre>
+      <p id="build-copy"></p>
+    </div>
+  </section>
+
+  <noscript><p class="prose">The builder runs in your browser and needs JavaScript. Without it, use <code>npx openbriefing tags your-file.yaml</code>.</p></noscript>
+
+  <div class="prose after">
+    <h2>The briefing file</h2>
+    <p>
+      A briefing file is a few lines of YAML. Only <code>summary</code> is needed. A wrapped line is read as a space, and a
+      blank line as a paragraph break.
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Key</th><th>What to write</th></tr></thead>
+        <tbody>
+          <tr><td><code>summary</code></td><td>Your summary. Around 200 to 350 words serves the most uses.</td></tr>
+          <tr><td><code>headline</code></td><td>One or two lines, 40 words or fewer.</td></tr>
+          <tr><td><code>keep</code></td><td>Up to three lines every shorter version should keep. The first is the core message.</td></tr>
+          <tr><td><code>highlights</code></td><td>Up to five passages from the post that may be quoted on their own, each with an optional <code>label</code>.</td></tr>
+          <tr><td><code>attribution</code></td><td>How to credit you, such as "From Example Blog".</td></tr>
+          <tr><td><code>url</code></td><td>The post's address.</td></tr>
+          <tr><td><code>status</code></td><td><code>draft</code> until you have read every line, then <code>approved</code>.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Also read: <code>title</code>, <code>summary_short</code>, <code>summary_long</code>, <code>derive</code>, <code>translate</code>,{" "}<code>combine</code>, <code>preference</code>, <code>lang</code> and <code>modified</code>. Each matches{" "}<a href="/ns">the tag of the same name</a>.
+    </p>
+    <p>The same file works from the command line:</p>
+    <pre><code>npx openbriefing tags your-file.yaml</code></pre>
+  </div>
+</Base>
+
+<script src="../scripts/builder.ts"></script>
+
+<style is:global>
+  .intro h1 {
+    font-size: clamp(2.2rem, 1.4rem + 3.4vw, 3.6rem);
+  }
+  .intro .lede {
+    margin-top: 1rem;
+  }
+  .builder {
+    margin-top: 2.2rem;
+    max-width: 46rem;
+  }
+  .builder > label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .builder #build-file {
+    min-height: 20rem;
+  }
+  .builder .note {
+    margin-top: 0.8rem;
+  }
+  .linkish {
+    all: unset;
+    cursor: pointer;
+    color: var(--pencil);
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+  }
+  .linkish:focus-visible {
+    outline: 3px solid var(--pencil);
+    outline-offset: 2px;
+  }
+  .builder .paste {
+    margin-top: 1.6rem;
+    border-top: 1px solid var(--line);
+    padding-top: 1rem;
+  }
+  .builder .paste > summary {
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .builder .paste textarea {
+    margin: 0.9rem 0 0;
+  }
+  .builder .paste p {
+    margin-top: 1rem;
+  }
+  .result .state {
+    margin-top: 0.7rem;
+    color: var(--slate);
+  }
+  .output {
+    margin-top: 3rem;
+    max-width: 46rem;
+  }
+  .output > * + * {
+    margin-top: 1rem;
+  }
+  .output .draft-note {
+    border-left: 6px solid var(--marker);
+    padding-left: 0.9rem;
+  }
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    border-bottom: 1.5px solid var(--ink);
+  }
+  .tabs button {
+    background: transparent;
+    color: var(--ink);
+    border: 1.5px solid transparent;
+    border-bottom: 0;
+    border-radius: 4px 4px 0 0;
+    padding: 0.5rem 0.9rem;
+    font-weight: 600;
+  }
+  .tabs button:hover {
+    background: var(--wash);
+    color: var(--ink);
+    border-color: transparent;
+  }
+  .tabs button[aria-selected="true"] {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  #build-panel > * + * {
+    margin-top: 0.8rem;
+  }
+  #build-panel pre {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    max-height: 26rem;
+    overflow-y: auto;
+  }
+  .after {
+    margin-top: 4rem;
+  }
+</style>

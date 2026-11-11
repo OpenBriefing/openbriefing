@@ -2,6 +2,24 @@
 
 Changes to the specification and to the `openbriefing` package, newest first. The spec and the package are versioned separately: the spec's major version is what `obs:version` carries.
 
+## Package 0.4.0: the publisher's kit (11 November 2026)
+
+No change to the specification.
+
+**Package**
+
+- **The briefing file:** a few lines of YAML (`summary`, `headline`, `keep`, `highlights`, `attribution`, `url`, `status`, and the optional keys that match the other tags), or the same keys under `obs:` in a post's front matter. A tool convention, not part of the standard.
+- `openbriefing tags <file>` turns a briefing file into escaped tags: meta tags, feed elements (`--format feed`) or JSON. It checks each highlight against the post's text when the file is a post, and refuses a file whose `status` is not `approved` unless `--allow-draft` is given.
+- `openbriefing ghost pull <folder>` writes one file per published Ghost post, with the post's text, and imports tags a post already carries as approved. It never changes Ghost and never overwrites a file.
+- `openbriefing ghost push <folder>` writes each approved file's tags into its post's Code injection header, between `<!-- obs:start -->` and `<!-- obs:end -->`, and nothing else. A post whose tags have not changed is skipped. `--dry-run` writes nothing.
+- `openbriefing/briefing` exports the same code for other tools: `parseBriefing`, `renderTags`, `markTags`, `replaceMarked`.
+
+**Kit and site**
+
+- `kit/prompt.md`: a drafting prompt for any assistant, in the public domain. `kit/skill/`: the same as an assistant skill. `kit/examples/`: example briefing files.
+- [openbriefingstandard.org/publish](https://openbriefingstandard.org/publish): draft, review, place the tags, check.
+- [openbriefingstandard.org/build](https://openbriefingstandard.org/build): paste a briefing file, see it checked as you type, copy tags for HTML, Ghost, front matter or a feed. Nothing typed leaves the page.
+
 ## Package 0.3.0, spec version 1 release candidate (10 November 2026)
 
 **Spec**

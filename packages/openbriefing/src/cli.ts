@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 /**
+ * openbriefing tags <file.yaml | post.md | -> [--format html | feed | json] [--marked] [--allow-draft]
+ * openbriefing ghost pull <folder> [--slug <slug>]
+ * openbriefing ghost push <folder> [--slug <slug>] [--dry-run]
  * openbriefing check <url | file | -> [--url <page url>] [--json]
  * openbriefing check <feed url | file> --feed [--pages]
  * openbriefing check <sitemap url | file> --sitemap [--limit <n>]
@@ -11,6 +14,7 @@ import { readFileSync } from "node:fs";
 import { basename, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { JSDOM } from "jsdom";
+import { markTags, parseBriefing, renderTags } from "./briefing.js";
 import { DEFAULT_LIMITS, fetchText, isHttpUrl, mapLimit, userAgent, type FetchLimits } from "./fetch.js";
 import { countWords, fingerprint, mergeObs, parseFeedObs, parseObs, SIZES, type ObsBrief, type ParseResult } from "./obs.js";
 
@@ -25,11 +29,22 @@ const VERSION: string = (() => {
 const LIMITS: FetchLimits = { ...DEFAULT_LIMITS, userAgent: userAgent(VERSION) };
 
 const USAGE = `Usage:
+  openbriefing tags <file.yaml | post.md | -> [--format html | feed | json] [--marked] [--allow-draft]
+  openbriefing ghost pull <folder> [--slug <slug>]
+  openbriefing ghost push <folder> [--slug <slug>] [--dry-run]
   openbriefing check <url | file | -> [--url <page url>] [--json]
   openbriefing check <feed url | file> --feed [--pages]
   openbriefing check <sitemap url | file> --sitemap [--limit <n>]
 
-Checks a page, a feed or a sitemap for Open Briefing Standard tags.
+tags turns a briefing file into escaped tags. ghost pull writes one file per
+published post; ghost push writes each approved file's tags into its post
+(GHOST_URL and GHOST_ADMIN_API_KEY in the environment). check reads a page,
+a feed or a sitemap and prints what a reader sees.
+  --format   html (meta tags, the default), feed (RSS and Atom elements) or json
+  --marked   wrap the tags in the obs:start and obs:end comments
+  --allow-draft  write tags for a file whose status is not approved
+  --slug     with ghost: one post only
+  --dry-run  with ghost push: say what would be written, and write nothing
   --url      the page's address, when checking a file with no canonical link
   --feed     treat the input as an RSS or Atom feed (detected when omitted)
   --pages    with a feed: also fetch each item's page and say which one stands
@@ -48,17 +63,31 @@ interface Args {
   sitemap: boolean;
   limit?: number;
   bad?: string;
+  rest: string[];
+  format?: string;
+  slug?: string;
+  marked: boolean;
+  allowDraft: boolean;
+  dryRun: boolean;
 }
 
 function parseArgs(argv: string[]): Args {
-  const args: Args = { json: false, feed: false, pages: false, sitemap: false };
+  const args: Args = { json: false, feed: false, pages: false, sitemap: false, rest: [], marked: false, allowDraft: false, dryRun: false };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i]!;
     if (a === "--json") args.json = true;
     else if (a === "--feed") args.feed = true;
     else if (a === "--pages") args.pages = true;
     else if (a === "--sitemap") args.sitemap = true;
-    else if (a === "--url") {
+    else if (a === "--marked") args.marked = true;
+    else if (a === "--allow-draft") args.allowDraft = true;
+    else if (a === "--dry-run") args.dryRun = true;
+    else if (a === "--format" || a === "--slug") {
+      const v = argv[++i];
+      if (v === undefined) args.bad = `${a} needs a value`;
+      else if (a === "--format") args.format = v;
+      else args.slug = v;
+    } else if (a === "--url") {
       const v = argv[++i];
       if (v === undefined) args.bad = "--url needs an address";
       else args.url = v;
@@ -71,6 +100,7 @@ function parseArgs(argv: string[]): Args {
     else if (a.startsWith("--")) args.bad = `unknown option ${a}`;
     else if (args.command === undefined) args.command = a;
     else if (args.target === undefined) args.target = a;
+    else args.rest.push(a);
   }
   return args;
 }
@@ -294,9 +324,71 @@ async function check(args: Args): Promise<number> {
   return r.brief ? 0 : 1;
 }
 
+function usage(args: Args): number {
+  if (args.bad) console.error(`${args.bad}\n`);
+  console.error(USAGE);
+  return 2;
+}
+
+function tags(args: Args): number {
+  const format = args.format ?? "html";
+  if (!args.target || args.bad || !["html", "feed", "json"].includes(format)) {
+    if (!args.bad && args.target) args.bad = `--format is html, feed or json, not ${format}`;
+    return usage(args);
+  }
+  let text: string;
+  try {
+    text = readFileSync(args.target === "-" ? 0 : args.target, "utf8");
+  } catch (err) {
+    console.error(`Cannot read ${safe(args.target)}: ${err instanceof Error ? err.message : String(err)}`);
+    return 2;
+  }
+  const b = parseBriefing(text);
+  for (const e of b.errors) console.error(`error    ${safe(e)}`);
+  for (const w of b.warnings) console.error(`warning  ${safe(w)}`);
+  if (!b.brief) return 1;
+  if (b.status !== "approved" && !args.allowDraft) {
+    console.error("This file is a draft. Set status: approved once the author has read every line, or pass --allow-draft.");
+    return 1;
+  }
+  if (format === "json") {
+    console.log(JSON.stringify({ status: b.status, fingerprint: fingerprint(b.brief), brief: b.brief, warnings: b.warnings }, null, 2));
+    return 0;
+  }
+  const draft = b.status !== "approved";
+  const out = renderTags(b.brief, format as "html" | "feed");
+  if (args.marked && format === "html") console.log(markTags(out, draft));
+  else console.log(draft ? `<!-- obs: a draft, not yet approved by the author -->\n${out}` : out);
+  return 0;
+}
+
+async function ghost(args: Args): Promise<number> {
+  const action = args.target;
+  const folder = args.rest[0];
+  if (args.bad || (action !== "pull" && action !== "push") || !folder) return usage(args);
+  const url = process.env.GHOST_URL;
+  const key = process.env.GHOST_ADMIN_API_KEY;
+  if (!url || !key) {
+    console.error("Set GHOST_URL (the site's address) and GHOST_ADMIN_API_KEY (Ghost Admin, Integrations, a custom integration's Admin API key).");
+    return 2;
+  }
+  const { Ghost, pull, push } = await import("./ghost.js");
+  const client = new Ghost({ url, key });
+  const opts: { slug?: string; dryRun?: boolean } = { dryRun: args.dryRun };
+  if (args.slug !== undefined) opts.slug = args.slug;
+  const lines = action === "pull" ? await pull(client, folder, args.slug) : await push(client, folder, opts);
+  for (const l of lines) console.log(`${l.state.padEnd(12)} ${safe(l.slug)}${l.note ? `  (${safe(l.note)})` : ""}`);
+  const count = (s: string) => lines.filter((l) => l.state === s).length;
+  const states = [...new Set(lines.map((l) => l.state))];
+  console.log(lines.length === 0 ? "Nothing to do." : `\n${states.map((s) => `${count(s)} ${s}`).join(", ")}`);
+  return count("error") > 0 ? 1 : 0;
+}
+
 async function main(argv: string[]): Promise<number> {
   const args = parseArgs(argv);
   if (args.command === "check") return check(args);
+  if (args.command === "tags") return tags(args);
+  if (args.command === "ghost") return ghost(args);
   if (args.command === "version") {
     console.log(VERSION);
     return 0;

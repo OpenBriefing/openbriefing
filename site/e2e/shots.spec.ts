@@ -18,6 +18,13 @@ for (const [name, width, scheme] of [["desktop", 1280, "light"], ["mobile", 390,
     await expect(page.locator("#check-result .verdict")).toBeVisible();
     await page.waitForTimeout(600);
     await page.screenshot({ path: `${dir}/${name}-check.png`, fullPage: true });
+    await page.goto("/build");
+    await page.getByRole("button", { name: "Start from an example" }).click();
+    await expect(page.locator("#build-result .verdict")).toBeVisible();
+    await page.getByRole("tab", { name: "Ghost" }).click();
+    await page.screenshot({ path: `${dir}/${name}-build.png`, fullPage: true });
+    await page.goto("/publish");
+    await page.screenshot({ path: `${dir}/${name}-publish.png`, fullPage: true });
     await context.close();
   });
 }
