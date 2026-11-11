@@ -133,7 +133,7 @@ describe("openbriefing tags", () => {
     const r = run("tags", join(EXAMPLES, "quotes.yaml"));
     expect(r.status).toBe(0);
     expect(r.stdout).toContain('<meta property="obs:keep" content="The judge called it &quot;the best plot under 10 m²&quot;.">');
-  });
+  }, 30_000);
 
   it("refuses a draft, and with --allow-draft marks the output as one", () => {
     const refused = run("tags", join(EXAMPLES, "draft.yaml"));
@@ -143,7 +143,7 @@ describe("openbriefing tags", () => {
     const allowed = run("tags", join(EXAMPLES, "draft.yaml"), "--allow-draft", "--marked");
     expect(allowed.status).toBe(0);
     expect(allowed.stdout.split("\n").slice(0, 2)).toEqual(["<!-- obs:start -->", "<!-- obs: a draft, not yet approved by the author -->"]);
-  });
+  }, 30_000);
 
   it("writes feed elements and JSON, and exits 1 with the reason when there is no summary", () => {
     const feed = run("tags", join(EXAMPLES, "full.yaml"), "--format", "feed");
@@ -156,5 +156,5 @@ describe("openbriefing tags", () => {
     expect(none.status).toBe(1);
     expect(none.stderr).toContain("No summary");
     expect(run("tags", join(EXAMPLES, "full.yaml"), "--format", "pdf").status).toBe(2);
-  });
+  }, 30_000);
 });

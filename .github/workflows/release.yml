@@ -44,7 +44,7 @@ jobs:
         run: |
           version="${GITHUB_REF_NAME#v}"
           awk -v v="$version" '
-            /^## / { on = (index($0, "Package " v ",") > 0 || index($0, "Package " v " ") > 0) }
+            /^## / { on = (index($0, "Package " v ",") > 0 || index($0, "Package " v " ") > 0 || index($0, "Package " v ":") > 0) }
             on && !/^## / { print }
           ' CHANGELOG.md > notes.md
           [ -s notes.md ] || echo "See CHANGELOG.md." > notes.md

@@ -113,25 +113,28 @@ $("build-approve").addEventListener("click", () => {
 });
 
 const fetchButton = $<HTMLButtonElement>("build-fetch");
+const fetchNote = $<HTMLParagraphElement>("build-fetch-note");
 fetchButton.addEventListener("click", async () => {
+  // Read the box as it is now, not as it was a keystroke ago.
+  window.clearTimeout(timer);
+  render();
   const address = current?.briefing.brief?.url;
   if (!address) {
-    status.textContent = "";
-    window.alert("Add the post's address to the file first, as a line starting url:");
+    fetchNote.textContent = "Add the post's address to the file first, as a line starting url:";
     return;
   }
   fetchButton.disabled = true;
-  status.textContent = "Reading the post…";
+  fetchNote.textContent = "Reading the post…";
   const page = await fetchPage(address);
   fetchButton.disabled = false;
   if ("error" in page) {
-    status.textContent = page.error;
-    window.alert(page.error);
+    fetchNote.textContent = `${page.error} You can paste the post's text instead.`;
     return;
   }
   const doc = new DOMParser().parseFromString(page.text, "text/html");
   for (const el of Array.from(doc.querySelectorAll("script, style, noscript, template"))) el.remove();
   postInput.value = (doc.body?.textContent ?? "").replace(/[ \t]*\n\s*/gu, "\n").trim();
+  fetchNote.textContent = "Read the post. Its text is in the box above.";
   render();
 });
 
