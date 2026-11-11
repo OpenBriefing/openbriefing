@@ -2,7 +2,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { JSDOM } from "jsdom";
-import { parseFeedObs, parseObs, type ParseResult } from "../src/obs.js";
+import { fingerprint, parseFeedObs, parseObs, type ParseResult } from "../src/obs.js";
 
 export const FIXTURES = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "spec", "fixtures");
 
@@ -30,4 +30,14 @@ export function parseFeed(xml: string): ParseResult[] {
 export function readFixture(name: string): ParseResult | ParseResult[] {
   const text = readFileSync(join(FIXTURES, name), "utf8");
   return name.endsWith(".xml") ? parseFeed(text) : parsePage(text, pageUrlFor(name));
+}
+
+/** What expected.json records: the parse result, plus the brief's fingerprint when there is one. */
+export type Expected = ParseResult & { fingerprint?: string };
+
+const withPrint = (r: ParseResult): Expected => (r.brief ? { ...r, fingerprint: fingerprint(r.brief) } : r);
+
+export function expectedFor(name: string): Expected | Expected[] {
+  const r = readFixture(name);
+  return Array.isArray(r) ? r.map(withPrint) : withPrint(r);
 }

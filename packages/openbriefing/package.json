@@ -1,6 +1,6 @@
 {
   "name": "openbriefing",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Open Briefing Standard (OBS): the reference parser and checker for publishers' own summaries.",
   "keywords": [
     "open-briefing-standard",
@@ -25,6 +25,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./fetch": {
+      "types": "./dist/fetch.d.ts",
+      "import": "./dist/fetch.js"
     },
     "./fixtures/*": "./fixtures/*"
   },
