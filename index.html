@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Open Briefing Standard</title>
+<meta name="description" content="A few meta tags that let a publisher say, in their own words, how software should summarize their writing.">
+<style>
+:root{--bg:#fbfaf7;--fg:#1c1b19;--mute:#625f58;--line:#dedad1;--code:#f0ede6;--link:#0b5cad}
+@media (prefers-color-scheme:dark){:root{--bg:#161614;--fg:#ecebe6;--mute:#a5a299;--line:#34332f;--code:#23221f;--link:#8cc0ff}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.6 Georgia,'Times New Roman',serif}
+main{max-width:46rem;margin:0 auto;padding:3rem 1rem 4rem}
+h1{font-size:2rem;line-height:1.2;margin:0 0 .5rem}h2{font-size:1.15rem;margin:2.2rem 0 .5rem}
+p.lede{font-size:1.15rem;color:var(--mute);margin-top:0}
+a{color:var(--link)}code,pre{font:14px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--code);border-radius:4px}
+code{padding:.1em .3em}pre{padding:1rem;overflow-x:auto}pre code{padding:0;background:none}
+.wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{text-align:left;vertical-align:top;padding:.5rem .6rem;border-bottom:1px solid var(--line)}
+td:first-child{white-space:nowrap}footer{margin-top:3rem;color:var(--mute);font-size:14px}
+</style>
+</head>
+<body>
+<main>
+<h1>Open Briefing Standard</h1>
+<p class="lede">A few meta tags that let a publisher say, in their own words, how software should summarize their writing.</p>
+<p>Assistants, readers and briefing tools summarize pages whether or not the author had a say. With OBS the author writes the summary once, and any tool that reads the tags can show or speak those words, credited, instead of guessing.</p>
+<h2>What it looks like</h2>
+<pre><code>&lt;meta property="obs:summary" content="Your summary, in your own words."&gt;
+&lt;meta property="obs:headline" content="One or two lines to read before going further."&gt;
+&lt;meta property="obs:attribution" content="From Example Blog"&gt;</code></pre>
+<p>The same tags can be mirrored in an RSS or Atom feed. OBS is a format only: it asks nothing of the tools that read it.</p>
+<h2>Read and try</h2>
+<ul>
+<li><a href="https://github.com/OpenBriefing/openbriefing/blob/main/spec/v1.md">The specification</a> (Draft 1.1; the tag names are not yet fixed)</li>
+<li><a href="/ns">The tags</a>, one line each</li>
+<li><a href="/examples/">Example pages</a></li>
+<li>Check a saved page: <code>npx openbriefing check page.html</code> (<a href="https://www.npmjs.com/package/openbriefing">npm</a>)</li>
+</ul>
+<p>This page is a placeholder. A fuller site with a checker is on the way.</p>
+<footer>The specification is CC0. The code is MIT. <a href="https://github.com/OpenBriefing/openbriefing">github.com/OpenBriefing/openbriefing</a></footer>
+</main>
+</body>
+</html>
