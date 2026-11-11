@@ -2,6 +2,8 @@
 // the reference parser as it is, so the site and the CLI always agree.
 import { countWords, fingerprint, parseFeedObs, parseObs, SIZES, type ObsBrief, type ObsSummary, type ParseResult } from "../../../packages/openbriefing/src/obs";
 
+import { escapeAttr, renderTags } from "../../../packages/openbriefing/src/briefing";
+
 export { fingerprint, SIZES, countWords };
 export type { ObsBrief, ParseResult };
 
@@ -102,31 +104,13 @@ export function listenText(brief: ObsBrief): { credit: string; summary: string; 
   return { credit, summary: pick.text, tier: pick.tier };
 }
 
-export function escapeAttr(value: string): string {
-  return value.replace(/&/gu, "&amp;").replace(/"/gu, "&quot;").replace(/</gu, "&lt;").replace(/>/gu, "&gt;").replace(/\n/gu, "&#10;");
-}
+export { escapeAttr };
 
 /** The brief written back as meta tags, escaped, ready to paste into a page's head. */
 export function tagsFor(brief: ObsBrief): string {
-  const out: string[] = [];
-  const tag = (k: string, v: string) => out.push(`<meta property="${k}" content="${escapeAttr(v)}">`);
-  if (brief.version !== 1) tag("obs:version", String(brief.version));
-  if (brief.title !== undefined) tag("obs:title", brief.title);
-  if (brief.headline !== undefined) tag("obs:headline", brief.headline);
-  for (const s of brief.summaries) tag(s.from === "tiered" ? `obs:summary:${s.tier}` : "obs:summary", s.text);
-  for (const k of brief.keep) tag("obs:keep", k);
-  for (const h of brief.highlights) {
-    tag("obs:highlight", h.text);
-    if (h.label !== undefined) tag("obs:highlight:label", h.label);
-  }
-  if (brief.derive.mode !== "anchor") tag("obs:derive", brief.derive.mode);
-  if (!brief.derive.translate) tag("obs:derive:translate", "no");
-  if (!brief.derive.combine) tag("obs:derive:combine", "no");
-  if (brief.attribution !== undefined) tag("obs:attribution", brief.attribution);
-  if (brief.preference !== "summary") tag("obs:preference", brief.preference);
-  if (brief.url !== undefined) tag("obs:url", brief.url);
-  if (brief.modified !== undefined && brief.modifiedFrom === "obs") tag("obs:modified", brief.modified);
-  return out.join("\n");
+  // A page's language may be its <html lang>, which is not a tag to write back.
+  const { lang: _lang, ...rest } = brief;
+  return renderTags(rest);
 }
 
 /** Messages from the parser cite spec sections as (§4); the page links them. */

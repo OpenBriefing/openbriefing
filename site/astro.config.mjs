@@ -8,6 +8,7 @@ export default defineConfig({
   output: "static",
   trailingSlash: "never",
   build: { format: "file" },
-  // The checker bundles the reference parser from the package beside the site.
-  vite: { server: { fs: { allow: [".."] } } },
+  // The checker and the builder bundle the reference parser from the package
+  // beside the site; its one dependency resolves from this folder.
+  vite: { server: { fs: { allow: [".."] } }, resolve: { dedupe: ["yaml"] } },
 });

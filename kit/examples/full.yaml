@@ -1,0 +1,38 @@
+# A briefing file with every key. Synthetic: the Garden Club does not exist.
+url: https://example.com/garden/the-tomato-year/
+title: The tomato year
+headline: The club's best harvest came from doing less, not more.
+summary: |
+  The Garden Club grew more tomatoes this year than in any year since it
+  began, and it did so by watering less. Members stopped the daily hose and
+  moved to one deep soak a week, under a thick straw mulch. The change came
+  from a single bed that was neglected during a holiday the year before and
+  outgrew every bed around it.
+
+  The plants rooted deeper, the fruit split less, and blight arrived three
+  weeks later than usual. The club measured the soil at a hand's depth each
+  Saturday and found it damp all week under the straw, and dry by Tuesday
+  without it. Water use fell by more than half.
+
+  The club will keep the method next year and extend it to the peppers &
+  squash. It will also stop feeding in August, which the same neglected bed
+  suggested the plants never needed.
+
+  None of this cost anything. The straw came from a member's field, and the
+  only new tool was a notebook for the Saturday readings. The members who
+  doubted the method most were the ones who had watered most faithfully, and
+  by July they were the ones showing visitors the notebook. The secretary's
+  account of the year ends with an apology to the plants.
+summary_short: The Garden Club's best tomato harvest came from watering once a week under straw, not daily.
+keep:
+  - One deep soak a week beat daily watering.
+  - Blight arrived three weeks later than usual.
+highlights:
+  - text: We had been drowning them out of kindness.
+    label: On watering
+  - The straw did more than the hose ever did.
+attribution: From the Garden Club newsletter
+translate: no
+lang: en
+modified: 2026-11-08T14:00:00Z
+status: approved

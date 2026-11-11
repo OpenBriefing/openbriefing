@@ -21,6 +21,47 @@ npx openbriefing check https://example.com/sitemap.xml --sitemap
 
 Fetching is bounded: `http` and `https` only, 10 seconds, 5 MB, 5 redirects, and it names itself `openbriefing-check/<version>`.
 
+## Write your tags
+
+A briefing file is a few lines of YAML that you, or your assistant, write for a post. `tags` turns it into escaped tags.
+
+```yaml
+url: https://example.com/a-post/
+headline: One or two lines to hear before going further.
+summary: |
+  Your summary, in plain text. Around 200 to 350 words.
+
+  A blank line is a paragraph break.
+keep:
+  - The one sentence every version must get across.
+highlights:
+  - text: A passage from the post, word for word.
+    label: On control
+attribution: From Example Blog
+status: approved
+```
+
+```sh
+npx openbriefing tags a-post.yaml                 # meta tags for the page's head
+npx openbriefing tags a-post.yaml --format feed   # elements for an RSS item or Atom entry
+npx openbriefing tags content/a-post.md           # the same keys under obs: in a post's front matter
+```
+
+A file whose `status` is not `approved` is refused (exit 1) unless you pass `--allow-draft`, so a build cannot publish a draft by accident. A drafting prompt for your assistant, and a builder that does the same in the browser, are at [openbriefingstandard.org/publish](https://openbriefingstandard.org/publish).
+
+### Ghost
+
+```sh
+export GHOST_URL=https://your-site.example
+export GHOST_ADMIN_API_KEY=…   # Ghost Admin → Integrations → add a custom integration
+
+npx openbriefing ghost pull posts/             # one file per published post, with its text
+npx openbriefing ghost push posts/ --dry-run   # say what would be written
+npx openbriefing ghost push posts/             # write the approved ones
+```
+
+`pull` never changes Ghost and never overwrites a file. `push` writes only approved files, only between `<!-- obs:start -->` and `<!-- obs:end -->` in the post's Code injection header, and skips a post whose tags have not changed. The folder holds your posts: keep it out of public repositories.
+
 ## Use the parser
 
 ```ts

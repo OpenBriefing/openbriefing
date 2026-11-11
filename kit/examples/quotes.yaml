@@ -1,0 +1,10 @@
+# Characters that need escaping in a tag: quotes, an ampersand, a less-than sign.
+url: https://example.com/garden/what-the-judge-said/
+summary: |
+  The judge called the club's entry "the best plot under 10 m²" & gave it
+  first place. Yields were up, and costs were < half of last year's.
+
+  The club's secretary said it was 'a fluke we intend to repeat'.
+keep: The judge called it "the best plot under 10 m²".
+derive: verbatim
+status: approved
