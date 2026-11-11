@@ -125,6 +125,9 @@ export function headWith(head: string, block: string): string | undefined {
   return replaceMarked(cleaned, block);
 }
 
+/** Ghost's slug shape. Anything else is never used as a file name or in a query. */
+const SLUG = /^[a-z0-9][a-z0-9_-]*$/iu;
+
 export interface Line {
   slug: string;
   state: "written" | "would write" | "unchanged" | "draft" | "skipped" | "pulled" | "kept" | "error";
@@ -140,7 +143,12 @@ const briefingFiles = (folder: string): string[] =>
 export async function pull(ghost: Ghost, folder: string, slug?: string): Promise<Line[]> {
   mkdirSync(folder, { recursive: true });
   const lines: Line[] = [];
+  if (slug !== undefined && !SLUG.test(slug)) return [{ slug, state: "error", note: "not a post slug" }];
   for (const post of await ghost.posts(slug)) {
+    if (typeof post.slug !== "string" || !SLUG.test(post.slug)) {
+      lines.push({ slug: String(post.slug), state: "error", note: "the post's slug is not a plain slug, so no file is written" });
+      continue;
+    }
     const path = join(folder, `${post.slug}.md`);
     if (existsSync(path)) {
       lines.push({ slug: post.slug, state: "kept", note: "the file is already here" });
@@ -160,7 +168,8 @@ export async function push(ghost: Ghost, folder: string, options: { slug?: strin
   const lines: Line[] = [];
   const files = briefingFiles(folder).filter((f) => options.slug === undefined || f.replace(/\.[^.]+$/u, "") === options.slug);
   if (files.length === 0) return lines;
-  const posts = new Map((await ghost.posts(files.length === 1 ? files[0]!.replace(/\.[^.]+$/u, "") : undefined)).map((p) => [p.slug, p]));
+  const only = files.length === 1 ? files[0]!.replace(/\.[^.]+$/u, "") : undefined;
+  const posts = new Map((await ghost.posts(only !== undefined && SLUG.test(only) ? only : undefined)).map((p) => [p.slug, p]));
   for (const file of files) {
     const briefing = parseBriefing(readFileSync(join(folder, file), "utf8"));
     const slug = briefing.slug ?? file.replace(/\.[^.]+$/u, "");

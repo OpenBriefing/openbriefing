@@ -150,6 +150,16 @@ describe("ghost push", () => {
 });
 
 describe("ghost pull", () => {
+  it("never writes a file for a slug that is not a plain slug", async () => {
+    const { ghost } = fakeGhost([post("../../escape", null), post("fine", null)]);
+    const dir = folderWith({});
+    const lines = await pull(ghost, join(dir, "posts"));
+    expect(lines.map((l) => [l.slug, l.state])).toEqual([["../../escape", "error"], ["fine", "pulled"]]);
+    expect(readdirSync(join(dir, "posts"))).toEqual(["fine.md"]);
+    expect(readdirSync(dir)).toEqual(["posts"]);
+    expect((await pull(ghost, dir, "a+status:draft"))[0]!.state).toBe("error");
+  });
+
   it("writes one file per published post, imports live tags as approved, and never overwrites a file", async () => {
     const live = '<!-- obs:start -->\n<meta property="obs:summary" content="Already on the page &amp; approved.">\n<meta property="obs:keep" content="Keep this.">\n<!-- obs:end -->';
     const posts = [post("one", null), post("two", live), post("three", null)];
