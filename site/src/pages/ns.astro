@@ -1,0 +1,62 @@
+---
+import Base from "../layouts/Base.astro";
+import { statusLine, tagRows } from "../lib/spec";
+
+const rows = tagRows();
+const status = statusLine();
+---
+
+<Base title="The obs: tags" description="Every tag of the Open Briefing Standard, one line each." path="/ns">
+  <div class="prose">
+    <h1>The <code>obs:</code> tags</h1>
+    <p class="lede">The namespace of the Open Briefing Standard, version 1.</p>
+    <pre><code>https://openbriefingstandard.org/ns#</code></pre>
+    <p>
+      In a page, each tag is a <code>&lt;meta property="obs:…" content="…"&gt;</code> element in the <code>&lt;head&gt;</code>.
+      In an RSS or Atom feed, each is an element in this namespace, declared as
+      <code>xmlns:obs="https://openbriefingstandard.org/ns#"</code>. The <a href="/spec/v1">specification</a> is the
+      authority; this page is generated from its table.
+    </p>
+    <p class="note">{status}</p>
+  </div>
+
+  <div class="table-wrap tags">
+    <table>
+      <thead><tr><th>Tag</th><th>Meaning</th><th>Required</th></tr></thead>
+      <tbody>
+        {rows.map((r) => (
+          <tr id={r.name.replace(/:/gu, "-")}>
+            <td><code>{r.name}</code></td>
+            <td set:html={r.meaning} />
+            <td set:html={r.required} />
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="prose">
+    <h2>In a feed</h2>
+    <p>
+      A sub-property becomes an attribute of its parent: <code>obs:summary:short</code> is written
+      <code>&lt;obs:summary length="short"&gt;</code>, a highlight's label is <code>&lt;obs:highlight label="…"&gt;</code>, and
+      <code>obs:derive:translate</code> and <code>obs:derive:combine</code> are attributes of <code>&lt;obs:derive&gt;</code>.
+      <a href="/spec/v1#14-feeds">Section 14</a> has an example.
+    </p>
+    <h2>Reserved names</h2>
+    <p>
+      Names under <code>obs:audio:</code>, and <code>obs:highlight:start</code> and <code>obs:highlight:end</code>, are held
+      for a later version. A reader ignores them.
+    </p>
+  </div>
+</Base>
+
+<style>
+  .tags {
+    margin: 2.5rem 0 1rem;
+  }
+  h1 code {
+    font-size: 0.82em;
+    padding: 0 0.15em;
+  }
+</style>

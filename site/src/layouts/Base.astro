@@ -1,0 +1,57 @@
+---
+import "@fontsource-variable/bricolage-grotesque/wdth.css";
+import "@fontsource-variable/atkinson-hyperlegible-next/wght.css";
+import "@fontsource-variable/atkinson-hyperlegible-mono/wght.css";
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description: string;
+  path: string;
+}
+const { title, description, path } = Astro.props;
+const canonical = new URL(path, "https://openbriefingstandard.org").href;
+const full = path === "/" ? title : `${title} | Open Briefing Standard`;
+const nav = [
+  { href: "/spec/v1", label: "Spec" },
+  { href: "/ns", label: "Tags" },
+  { href: "/check", label: "Check a page" },
+  { href: "/adopters", label: "Who uses it" },
+  { href: "https://github.com/OpenBriefing/openbriefing", label: "GitHub" },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head prefix="obs: https://openbriefingstandard.org/ns#">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{full}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:type" content="website" />
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to the content</a>
+    <header class="frame masthead">
+      <a class="wordmark" href="/">Open Briefing Standard</a>
+      <nav aria-label="Site">
+        {nav.map((n) => <a href={n.href} aria-current={n.href === path ? "page" : undefined}>{n.label}</a>)}
+      </nav>
+    </header>
+    <main id="main" class="frame">
+      <slot />
+    </main>
+    <footer class="frame colophon">
+      <span>The specification is in the public domain (CC0). The code is MIT.</span>
+      <span>
+        <a href="https://github.com/OpenBriefing/openbriefing/blob/main/GOVERNANCE.md">How it is run</a>{" "}and{" "}<a href="https://github.com/OpenBriefing/openbriefing/blob/main/CHANGELOG.md">what has changed</a>
+      </span>
+    </footer>
+  </body>
+</html>

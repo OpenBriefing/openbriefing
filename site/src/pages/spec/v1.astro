@@ -1,0 +1,108 @@
+---
+import Base from "../../layouts/Base.astro";
+import { renderSpec } from "../../lib/spec";
+
+const spec = renderSpec();
+const toc = spec.sections.filter((s) => s.depth === 2);
+---
+
+<Base title={spec.title} description="The specification of the Open Briefing Standard, version 1." path="/spec/v1">
+  <div class="spec">
+    <nav class="toc" aria-label="Sections">
+      <p class="toc-title">Sections</p>
+      <ul>
+        {toc.map((s) => <li><a href={`#${s.id}`}>{s.title}</a></li>)}
+      </ul>
+    </nav>
+    <article>
+      <h1>{spec.title}</h1>
+      <div class="front prose" set:html={spec.front} />
+      <div class="prose" set:html={spec.body} />
+      {spec.appendix && (
+        <aside class="appendix" aria-label="Appendix, informative">
+          <p class="appendix-flag">Informative. This appendix is guidance and not part of the format.</p>
+          <div class="prose" set:html={spec.appendix} />
+        </aside>
+      )}
+    </article>
+  </div>
+</Base>
+
+<style is:global>
+  .spec {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem 4rem;
+  }
+  @media (min-width: 62rem) {
+    .spec {
+      grid-template-columns: 13rem minmax(0, 1fr);
+    }
+    .spec .toc {
+      position: sticky;
+      top: 1.5rem;
+      align-self: start;
+      max-height: calc(100vh - 3rem);
+      overflow-y: auto;
+    }
+  }
+  .spec h1 {
+    font-size: clamp(2rem, 1.3rem + 3vw, 3.2rem);
+    max-width: 16ch;
+  }
+  .spec .toc-title {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .spec .toc ul {
+    margin: 0;
+    padding-left: 0;
+    list-style: none;
+    font-size: 0.95rem;
+    color: var(--slate);
+  }
+  .spec .toc li + li {
+    margin-top: 0.3rem;
+  }
+  .spec .toc a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .spec .toc a:hover {
+    text-decoration: underline;
+  }
+  .spec .front {
+    margin-top: 1.5rem;
+    color: var(--slate);
+    font-size: 0.98rem;
+  }
+  .spec .front > * + * {
+    margin-top: 0.35rem;
+  }
+  .spec .front strong {
+    color: var(--ink);
+  }
+  .spec h2 .anchor,
+  .spec h3 .anchor {
+    color: inherit;
+    text-decoration: none;
+  }
+  .spec h2 .anchor:hover,
+  .spec h3 .anchor:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+  }
+  .spec .appendix {
+    margin-top: 3.5rem;
+    padding: 0.5rem 0 0 1.5rem;
+    border-left: 4px solid var(--line);
+    max-width: calc(var(--measure) + 1.5rem);
+  }
+  .spec .appendix-flag {
+    font-weight: 600;
+    color: var(--slate);
+  }
+  .spec .appendix .prose > h2:first-child {
+    margin-top: 1.2rem;
+  }
+</style>

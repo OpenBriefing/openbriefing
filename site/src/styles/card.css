@@ -1,0 +1,45 @@
+/* The card a reader's tool might show. Used on the home page and by the checker. */
+.brief-card {
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 1.4rem 1.5rem 1.3rem;
+  box-shadow: 0 1px 0 var(--line), 0 14px 30px -22px rgb(16 27 51 / 0.45);
+  max-width: 34rem;
+}
+.brief-card > * + * {
+  margin-top: 0.8rem;
+}
+.brief-card .card-title {
+  font-family: var(--display);
+  font-weight: 650;
+  font-size: 1.35rem;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+}
+.brief-card .card-headline {
+  font-size: 1.05rem;
+  line-height: 1.45;
+}
+.brief-card .card-summary {
+  color: var(--slate);
+  font-size: 0.98rem;
+  white-space: pre-line;
+}
+.brief-card .card-quote {
+  margin: 1rem 0 0;
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+.brief-card .card-credit {
+  margin-top: 1.1rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.92rem;
+  color: var(--slate);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+  justify-content: space-between;
+}
