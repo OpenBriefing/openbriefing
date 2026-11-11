@@ -89,6 +89,27 @@ test("highlights are looked up in pasted text, or in the post read through the h
   await expect(page.locator("#build-result .highlights")).toContainText("Found in the post's text.");
   expect(asked).toBe("https://example.com/the-tomato-year");
   await expect(page.locator("#build-post")).toHaveValue("“We had been drowning them out of kindness.”");
+  await expect(page.locator("#build-fetch-note")).toHaveText("Read the post. Its text is in the box above.");
+});
+
+test("reading the post uses the address typed a moment ago, and says why when it cannot", async ({ page }) => {
+  const asked: string[] = [];
+  await page.route(HELPER, async (route) => {
+    asked.push(new URL(route.request().url()).searchParams.get("url") ?? "");
+    await route.fulfill({ json: { ok: false, error: "The page answered 404." } });
+  });
+  await page.goto("/build");
+  await page.getByRole("button", { name: "Start from an example" }).click();
+  await page.getByText("Check the highlights against your post").click();
+  await page.locator("#build-file").fill("url: https://example.org/a-newer-post/\nsummary: A summary.\n");
+  // No pause: the click lands before the typing delay has run out.
+  await page.getByRole("button", { name: "Read it from the post's address" }).click();
+  await expect(page.locator("#build-fetch-note")).toHaveText("The page answered 404. You can paste the post's text instead.");
+  expect(asked).toEqual(["https://example.org/a-newer-post"]);
+  await page.locator("#build-file").fill("summary: No address here.\n");
+  await page.getByRole("button", { name: "Read it from the post's address" }).click();
+  await expect(page.locator("#build-fetch-note")).toContainText("Add the post's address to the file first");
+  expect(asked).toHaveLength(1);
 });
 
 test("the guide carries the prompt, and every new page answers and is in the nav", async ({ page, request }) => {
