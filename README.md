@@ -18,7 +18,7 @@ A publisher can also mark passages of the content that may be quoted on their ow
 
 ## Status
 
-Version 1, release candidate. The tag names are frozen when version 1 is final. Read the spec: [spec/v1.md](spec/v1.md). The [changelog](CHANGELOG.md) records what changed, and [GOVERNANCE.md](GOVERNANCE.md) says how the standard is run and what will never change.
+Version 1. The tag names are fixed. Read the spec: [spec/v1.md](spec/v1.md). The [changelog](CHANGELOG.md) records what changed, and [GOVERNANCE.md](GOVERNANCE.md) says how the standard is run and what will never change.
 
 ## Check your page
 

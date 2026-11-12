@@ -2,6 +2,17 @@
 
 Changes to the specification and to the `openbriefing` package, newest first. The spec and the package are versioned separately: the spec's major version is what `obs:version` carries.
 
+## Version 1 final; package 1.0.0 (12 November 2026)
+
+**Spec**
+
+- Version 1 is final. The tag names are fixed: a tag's name and meaning never change, no tag is removed, and a minor version only adds optional tags. Nothing changed from the release candidate.
+- The first full catalogue is tagged: rishidean.com, 104 posts, checked with `openbriefing check --sitemap`.
+
+**Package**
+
+- `openbriefing@1.0.0`. The same code as 0.5.1; from here the package follows semantic versioning.
+
 ## Package 0.5.1 (12 November 2026)
 
 - `ghost hook` and `ghost draft` need the publisher's own `ANTHROPIC_API_KEY` and say so at start, instead of failing on the first post. The guide states that drafts are billed to that key and that nothing passes through openbriefingstandard.org.
