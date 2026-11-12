@@ -2,6 +2,10 @@
 
 Changes to the specification and to the `openbriefing` package, newest first. The spec and the package are versioned separately: the spec's major version is what `obs:version` carries.
 
+## Package 0.5.1 (12 November 2026)
+
+- `ghost hook` and `ghost draft` need the publisher's own `ANTHROPIC_API_KEY` and say so at start, instead of failing on the first post. The guide states that drafts are billed to that key and that nothing passes through openbriefingstandard.org.
+
 ## Package 0.5.0: tags on publish, for Ghost (11 November 2026)
 
 No change to the specification.
