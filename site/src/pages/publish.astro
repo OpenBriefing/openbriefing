@@ -66,6 +66,31 @@ npx openbriefing ghost push posts/</code></pre>
       tags have not changed. Keep the folder out of any public repository: it holds your posts.
     </p>
 
+    <h4 id="ghost-hook">Or have the tags written when you publish</h4>
+    <p>
+      A small hook can draft the tags for you each time a post goes live, and you edit them afterwards if you want to.
+      Run it anywhere that can run Node and has a public address:
+    </p>
+    <pre><code>export GHOST_URL=https://your-site.example
+export GHOST_ADMIN_API_KEY=…
+export GHOST_WEBHOOK_SECRET=…        # any long random text
+export ANTHROPIC_API_KEY=…
+export OBS_HOOK_URL=https://your-hook.example   # where Ghost can reach it
+
+npx openbriefing ghost hook</code></pre>
+    <p>
+      On start it registers two webhooks on your integration, for a post being published and a published post being
+      updated. About a minute after you publish, the post's Code injection header holds the tags. To change them, edit
+      them there: once you have, the tags are yours and the hook never writes to that post again. Delete the block and
+      the next update drafts a fresh one. <code>npx openbriefing ghost draft</code> does the same for posts you published
+      before.
+    </p>
+    <p>
+      Know what you are choosing: these tags go out as your words before you have read them, and a tool that has used a
+      summary keeps it. The hook quotes only passages it finds in the post, leaves members-only and very short posts
+      alone, and never touches tags you wrote. If you would rather read first, use <code>pull</code> and{" "}<code>push</code> above.
+    </p>
+
     <h3 id="static">A static site</h3>
     <p>
       Put the builder's front matter output in the post, under an <code>obs:</code> key, and have your head template write

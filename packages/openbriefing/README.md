@@ -62,6 +62,18 @@ npx openbriefing ghost push posts/             # write the approved ones
 
 `pull` never changes Ghost and never overwrites a file. `push` writes only approved files, only between `<!-- obs:start -->` and `<!-- obs:end -->` in the post's Code injection header, and skips a post whose tags have not changed. The folder holds your posts: keep it out of public repositories.
 
+To have the tags written when a post is published, run the hook where Ghost can reach it:
+
+```bash
+export GHOST_WEBHOOK_SECRET=…                   # any long random text
+export ANTHROPIC_API_KEY=…
+export OBS_HOOK_URL=https://your-hook.example   # registers the two webhooks on start
+npx openbriefing ghost hook                     # POST /ghost, GET /healthz, on PORT or 8080
+npx openbriefing ghost draft --dry-run          # the same for posts already published
+```
+
+The hook drafts with Claude (`OBS_MODEL` picks the model), keeps only highlights it finds in the post, and stamps its block `<!-- obs:auto … -->`. Edit the tags in the post's Code injection and they are yours: the hook never writes to that post again. It leaves members-only posts and posts under 200 words alone. These tags are published before you read them; use `pull` and `push` if you would rather approve each one.
+
 ## Use the parser
 
 ```ts

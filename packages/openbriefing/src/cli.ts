@@ -3,6 +3,8 @@
  * openbriefing tags <file.yaml | post.md | -> [--format html | feed | json] [--marked] [--allow-draft]
  * openbriefing ghost pull <folder> [--slug <slug>]
  * openbriefing ghost push <folder> [--slug <slug>] [--dry-run]
+ * openbriefing ghost draft [--slug <slug>] [--limit <n>] [--dry-run]
+ * openbriefing ghost hook [--port <n>]
  * openbriefing check <url | file | -> [--url <page url>] [--json]
  * openbriefing check <feed url | file> --feed [--pages]
  * openbriefing check <sitemap url | file> --sitemap [--limit <n>]
@@ -32,19 +34,26 @@ const USAGE = `Usage:
   openbriefing tags <file.yaml | post.md | -> [--format html | feed | json] [--marked] [--allow-draft]
   openbriefing ghost pull <folder> [--slug <slug>]
   openbriefing ghost push <folder> [--slug <slug>] [--dry-run]
+  openbriefing ghost draft [--slug <slug>] [--limit <n>] [--dry-run]
+  openbriefing ghost hook [--port <n>]
   openbriefing check <url | file | -> [--url <page url>] [--json]
   openbriefing check <feed url | file> --feed [--pages]
   openbriefing check <sitemap url | file> --sitemap [--limit <n>]
 
 tags turns a briefing file into escaped tags. ghost pull writes one file per
 published post; ghost push writes each approved file's tags into its post
-(GHOST_URL and GHOST_ADMIN_API_KEY in the environment). check reads a page,
-a feed or a sitemap and prints what a reader sees.
+(GHOST_URL and GHOST_ADMIN_API_KEY in the environment). ghost draft writes
+tags, drafted by Claude (ANTHROPIC_API_KEY), for each published post that has
+none. ghost hook does the same when a post is published: it serves Ghost's
+webhooks (GHOST_WEBHOOK_SECRET; OBS_HOOK_URL registers them). The author edits
+the tags in the post's Code injection, and an edited post is left alone.
+check reads a page, a feed or a sitemap and prints what a reader sees.
   --format   html (meta tags, the default), feed (RSS and Atom elements) or json
   --marked   wrap the tags in the obs:start and obs:end comments
   --allow-draft  write tags for a file whose status is not approved
   --slug     with ghost: one post only
-  --dry-run  with ghost push: say what would be written, and write nothing
+  --dry-run  with ghost push or draft: say what would be written, and write nothing
+  --port     with ghost hook: the port to listen on (PORT, or 8080)
   --url      the page's address, when checking a file with no canonical link
   --feed     treat the input as an RSS or Atom feed (detected when omitted)
   --pages    with a feed: also fetch each item's page and say which one stands
@@ -62,6 +71,7 @@ interface Args {
   pages: boolean;
   sitemap: boolean;
   limit?: number;
+  port?: number;
   bad?: string;
   rest: string[];
   format?: string;
@@ -91,6 +101,10 @@ function parseArgs(argv: string[]): Args {
       const v = argv[++i];
       if (v === undefined) args.bad = "--url needs an address";
       else args.url = v;
+    } else if (a === "--port") {
+      const n = Number.parseInt(argv[++i] ?? "", 10);
+      if (!Number.isInteger(n) || n < 1 || n > 65535) args.bad = "--port needs a port number";
+      else args.port = n;
     } else if (a === "--limit") {
       const n = Number.parseInt(argv[++i] ?? "", 10);
       if (!Number.isInteger(n) || n < 1) args.bad = "--limit needs a whole number above 0";
@@ -362,10 +376,20 @@ function tags(args: Args): number {
   return 0;
 }
 
+const printLine = (l: { slug: string; state: string; note?: string }) => console.log(`${l.state.padEnd(12)} ${safe(l.slug)}${l.note ? `  (${safe(l.note)})` : ""}`);
+
+function tally(lines: { state: string }[]): number {
+  const count = (s: string) => lines.filter((l) => l.state === s).length;
+  const states = [...new Set(lines.map((l) => l.state))];
+  console.log(lines.length === 0 ? "Nothing to do." : `\n${states.map((s) => `${count(s)} ${s}`).join(", ")}`);
+  return count("error") > 0 ? 1 : 0;
+}
+
 async function ghost(args: Args): Promise<number> {
   const action = args.target;
   const folder = args.rest[0];
-  if (args.bad || (action !== "pull" && action !== "push") || !folder) return usage(args);
+  const filed = action === "pull" || action === "push";
+  if (args.bad || !(filed || action === "draft" || action === "hook") || (filed && !folder)) return usage(args);
   const url = process.env.GHOST_URL;
   const key = process.env.GHOST_ADMIN_API_KEY;
   if (!url || !key) {
@@ -374,14 +398,33 @@ async function ghost(args: Args): Promise<number> {
   }
   const { Ghost, pull, push } = await import("./ghost.js");
   const client = new Ghost({ url, key });
+  if (action === "draft" || action === "hook") {
+    const { claudeDrafter, draftAll, hookServer, registerWebhooks } = await import("./hook.js");
+    const model = process.env.OBS_MODEL;
+    const drafter = claudeDrafter(model ? { model } : {});
+    if (action === "draft") {
+      const opts: Parameters<typeof draftAll>[2] = { dryRun: args.dryRun, onLine: printLine };
+      if (args.slug !== undefined) opts.slug = args.slug;
+      if (args.limit !== undefined) opts.limit = args.limit;
+      return tally(await draftAll(client, drafter, opts));
+    }
+    const secret = process.env.GHOST_WEBHOOK_SECRET;
+    if (!secret) {
+      console.error("Set GHOST_WEBHOOK_SECRET: any long random text. Ghost signs each webhook with it.");
+      return 2;
+    }
+    const target = process.env.OBS_HOOK_URL;
+    if (target) for (const line of await registerWebhooks(client, `${target.replace(/\/+$/u, "")}/ghost`, secret)) console.log(line);
+    const port = args.port ?? (Number(process.env.PORT) || 8080);
+    await new Promise<void>((done) => hookServer({ ghost: client, secret, drafter }).listen(port, done));
+    console.log(`openbriefing ghost hook is listening on ${port}`);
+    return new Promise<number>(() => {});
+  }
   const opts: { slug?: string; dryRun?: boolean } = { dryRun: args.dryRun };
   if (args.slug !== undefined) opts.slug = args.slug;
-  const lines = action === "pull" ? await pull(client, folder, args.slug) : await push(client, folder, opts);
-  for (const l of lines) console.log(`${l.state.padEnd(12)} ${safe(l.slug)}${l.note ? `  (${safe(l.note)})` : ""}`);
-  const count = (s: string) => lines.filter((l) => l.state === s).length;
-  const states = [...new Set(lines.map((l) => l.state))];
-  console.log(lines.length === 0 ? "Nothing to do." : `\n${states.map((s) => `${count(s)} ${s}`).join(", ")}`);
-  return count("error") > 0 ? 1 : 0;
+  const lines = action === "pull" ? await pull(client, folder!, args.slug) : await push(client, folder!, opts);
+  for (const l of lines) printLine(l);
+  return tally(lines);
 }
 
 async function main(argv: string[]): Promise<number> {

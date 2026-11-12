@@ -2,6 +2,16 @@
 
 Changes to the specification and to the `openbriefing` package, newest first. The spec and the package are versioned separately: the spec's major version is what `obs:version` carries.
 
+## Package 0.5.0: tags on publish, for Ghost (11 November 2026)
+
+No change to the specification.
+
+- `openbriefing ghost hook` serves Ghost's webhooks. When a post is published it drafts the summary with Claude from `kit/prompt.md`, keeps only highlights found in the post's text, and writes the tags into the post's Code injection header. It registers its own webhooks when `OBS_HOOK_URL` is set.
+- The hook's block carries a stamp, `<!-- obs:auto <fingerprint> -->`. While the tags match it the block is the hook's, and it is redone only when the post changes under a quote. Once the author edits the tags, or writes their own, the hook never writes to that post again.
+- `openbriefing ghost draft` does the same for posts already published, one at a time, with `--slug`, `--limit` and `--dry-run`.
+- Members-only posts and posts under 200 words are left alone.
+- This publishes a drafted summary as the author's before they have read it. `ghost pull` and `ghost push` remain for an author who approves each one first.
+
 ## Package 0.4.0: the publisher's kit (11 November 2026)
 
 No change to the specification.
