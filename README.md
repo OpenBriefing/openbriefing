@@ -36,6 +36,7 @@ The reference parser and checker are in [packages/openbriefing](packages/openbri
 - [`kit/prompt.md`](kit/prompt.md): a prompt that has your assistant draft the summary as a briefing file. [`kit/skill/`](kit/skill/SKILL.md) is the same as a skill.
 - [The tag builder](https://openbriefingstandard.org/build) and `npx openbriefing tags`: check a briefing file and write the tags.
 - `npx openbriefing ghost pull` and `ghost push`: keep one briefing file per Ghost post and write the approved ones.
+- `npx openbriefing ghost hook`: tags drafted and written when a Ghost post is published; edit them in the post afterwards.
 
 ## Who uses it
 

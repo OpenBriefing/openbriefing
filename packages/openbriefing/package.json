@@ -1,6 +1,6 @@
 {
   "name": "openbriefing",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Open Briefing Standard (OBS): the reference parser, the checker and the publisher's tag tools for publishers' own summaries.",
   "keywords": [
     "open-briefing-standard",
@@ -42,6 +42,7 @@
   "files": [
     "dist",
     "fixtures",
+    "kit",
     "README.md"
   ],
   "engines": {
@@ -53,9 +54,10 @@
     "test": "vitest run",
     "fixtures": "node ../../scripts/make-fixtures.mjs",
     "expected": "tsx scripts/write-expected.ts",
-    "prepack": "rm -rf fixtures && cp -R ../../spec/fixtures fixtures && npm run build"
+    "prepack": "rm -rf fixtures kit && cp -R ../../spec/fixtures fixtures && mkdir kit && cp ../../kit/prompt.md kit/prompt.md && npm run build"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^1.8.0",
     "jsdom": "^26.1.0",
     "yaml": "^2.9.1"
   },

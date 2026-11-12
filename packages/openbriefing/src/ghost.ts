@@ -20,6 +20,8 @@ export interface GhostPost {
   updated_at: string;
   codeinjection_head: string | null;
   plaintext?: string | null;
+  /** "public", or who may read it. */
+  visibility?: string;
 }
 
 export type FetchLike = (url: string, init: { method: string; headers: Record<string, string>; body?: string }) => Promise<{ ok: boolean; status: number; json(): Promise<unknown>; text(): Promise<string> }>;
@@ -94,6 +96,11 @@ export class Ghost {
     return out;
   }
 
+  /** Adds a webhook to the integration this key belongs to. */
+  async addWebhook(event: string, target: string, secret: string): Promise<void> {
+    await this.call("POST", "/webhooks/", { webhooks: [{ event, target_url: target, secret, name: `Open Briefing: ${event}` }] });
+  }
+
   /** Writes a post's Code injection header and nothing else. `updated_at` is Ghost's guard against overwriting a newer edit. */
   async setHead(post: GhostPost, head: string): Promise<void> {
     await this.call("PUT", `/posts/${post.id}/`, { posts: [{ codeinjection_head: head, updated_at: post.updated_at }] });
@@ -126,7 +133,7 @@ export function headWith(head: string, block: string): string | undefined {
 }
 
 /** Ghost's slug shape. Anything else is never used as a file name or in a query. */
-const SLUG = /^[a-z0-9][a-z0-9_-]*$/iu;
+export const SLUG = /^[a-z0-9][a-z0-9_-]*$/iu;
 
 export interface Line {
   slug: string;
