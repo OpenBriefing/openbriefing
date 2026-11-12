@@ -142,7 +142,7 @@ describe("build-time readers", () => {
     expect(spec.body).not.toContain("Appendix A (informative)</a></h2>");
     expect(spec.front).toContain("https://github.com/OpenBriefing/openbriefing/blob/main/LICENSE-SPEC");
     expect(spec.front + spec.body + spec.appendix).not.toContain('href="../');
-    expect(statusLine()).toContain("release candidate");
+    expect(statusLine()).toContain("The tag names are fixed");
     expect(slug("3.1 Reading the tags")).toBe("31-reading-the-tags");
   });
 

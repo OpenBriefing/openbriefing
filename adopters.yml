@@ -7,7 +7,7 @@ publishers:
     url: https://rishidean.com
     example: https://rishidean.com/disruptive-tech-evolution-ai/
     since: 2026-11-10
-    note: A personal blog on technology and product. The first posts carry a headline, a summary, keep lines and highlights.
+    note: A personal blog on technology and product. Every post of 200 words or more carries a headline, a summary, keep lines and highlights, written when it is published.
 
 consumers:
   - name: ikku

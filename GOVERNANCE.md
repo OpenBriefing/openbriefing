@@ -14,14 +14,12 @@ A proposal is more likely to be accepted when a publisher and a tool both want i
 
 ## What will not change
 
-Version 1 is a release candidate. From the day it is final:
+Version 1 is final, as of 12 November 2026:
 
 - **A tag's name and meaning never change, and no tag is removed.** A page tagged for version 1 stays valid.
 - **A minor version only adds optional tags.** A reader of 1.0 can read any 1.x page and ignore what it does not know.
 - **Anything else is a new major version,** announced by `obs:version`.
 - **The namespace URL is permanent:** `https://openbriefingstandard.org/ns#`.
-
-Until version 1 is final a tag name could still change. If one does, the changelog says so and the checker warns about the old name.
 
 ## What OBS will not become
 

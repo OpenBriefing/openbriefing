@@ -2,7 +2,7 @@
 
 This package is the reference parser and checker for the [Open Briefing Standard (OBS)](https://openbriefingstandard.org). OBS is how a publisher says how their content should be summarized and presented when software consumes it.
 
-**Version 0.3.** It contains the parser and `openbriefing check`, and reads spec version 1 (release candidate). One tag, `obs:summary`, is enough: `obs:modified` is optional, and the parser reports where a modified time came from. `check` reads a page, a feed or a whole sitemap from the web.
+**Version 1.** It contains the parser, `openbriefing check` and the publisher's tag tools, and reads spec version 1. One tag, `obs:summary`, is enough: `obs:modified` is optional, and the parser reports where a modified time came from. `check` reads a page, a feed or a whole sitemap from the web.
 
 ## Check a page, a feed or a site
 
