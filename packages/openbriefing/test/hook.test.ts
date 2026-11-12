@@ -210,3 +210,13 @@ describe("the drafting prompt", () => {
     expect(draftingPrompt()).toContain("Always end the file with `status: draft`");
   });
 });
+
+describe("the publisher's own key", () => {
+  it("the hook will not start without ANTHROPIC_API_KEY, and says whose key it is", async () => {
+    const { spawnSync } = await import("node:child_process");
+    const env = { ...process.env, GHOST_URL: "https://blog.example", GHOST_ADMIN_API_KEY: KEY, GHOST_WEBHOOK_SECRET: SECRET, ANTHROPIC_API_KEY: "" };
+    const out = spawnSync("npx", ["tsx", "src/cli.ts", "ghost", "hook"], { encoding: "utf8", cwd: new URL("..", import.meta.url), env });
+    expect(out.status).toBe(2);
+    expect(out.stderr).toContain("your own Anthropic API key");
+  }, 30_000);
+});

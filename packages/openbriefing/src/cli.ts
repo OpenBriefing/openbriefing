@@ -399,6 +399,11 @@ async function ghost(args: Args): Promise<number> {
   const { Ghost, pull, push } = await import("./ghost.js");
   const client = new Ghost({ url, key });
   if (action === "draft" || action === "hook") {
+    // The publisher brings the key: every draft is one call to Claude, billed to their own account.
+    if (!process.env.ANTHROPIC_API_KEY && !(action === "draft" && args.dryRun)) {
+      console.error("Set ANTHROPIC_API_KEY to your own Anthropic API key (console.anthropic.com). Each post is one call to Claude, billed to that key.");
+      return 2;
+    }
     const { claudeDrafter, draftAll, hookServer, registerWebhooks } = await import("./hook.js");
     const model = process.env.OBS_MODEL;
     const drafter = claudeDrafter(model ? { model } : {});

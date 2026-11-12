@@ -66,13 +66,13 @@ To have the tags written when a post is published, run the hook where Ghost can 
 
 ```bash
 export GHOST_WEBHOOK_SECRET=…                   # any long random text
-export ANTHROPIC_API_KEY=…
+export ANTHROPIC_API_KEY=…                      # your own Anthropic key; one call per post, billed to you
 export OBS_HOOK_URL=https://your-hook.example   # registers the two webhooks on start
 npx openbriefing ghost hook                     # POST /ghost, GET /healthz, on PORT or 8080
 npx openbriefing ghost draft --dry-run          # the same for posts already published
 ```
 
-The hook drafts with Claude (`OBS_MODEL` picks the model), keeps only highlights it finds in the post, and stamps its block `<!-- obs:auto … -->`. Edit the tags in the post's Code injection and they are yours: the hook never writes to that post again. It leaves members-only posts and posts under 200 words alone. These tags are published before you read them; use `pull` and `push` if you would rather approve each one.
+The hook drafts with Claude on your own key (`OBS_MODEL` picks the model) and will not start without one. It keeps only highlights it finds in the post, and stamps its block `<!-- obs:auto … -->`. Edit the tags in the post's Code injection and they are yours: the hook never writes to that post again. It leaves members-only posts and posts under 200 words alone. These tags are published before you read them; use `pull` and `push` if you would rather approve each one.
 
 ## Use the parser
 

@@ -74,7 +74,7 @@ npx openbriefing ghost push posts/</code></pre>
     <pre><code>export GHOST_URL=https://your-site.example
 export GHOST_ADMIN_API_KEY=…
 export GHOST_WEBHOOK_SECRET=…        # any long random text
-export ANTHROPIC_API_KEY=…
+export ANTHROPIC_API_KEY=…           # your own Anthropic key
 export OBS_HOOK_URL=https://your-hook.example   # where Ghost can reach it
 
 npx openbriefing ghost hook</code></pre>
@@ -84,6 +84,10 @@ npx openbriefing ghost hook</code></pre>
       them there: once you have, the tags are yours and the hook never writes to that post again. Delete the block and
       the next update drafts a fresh one. <code>npx openbriefing ghost draft</code> does the same for posts you published
       before.
+    </p>
+    <p>
+      The Anthropic key is your own, from your Anthropic account. The hook runs on your server and calls Claude with it,
+      one call per post, billed to you. Nothing passes through this site, and the hook will not start without the key.
     </p>
     <p>
       Know what you are choosing: these tags go out as your words before you have read them, and a tool that has used a
